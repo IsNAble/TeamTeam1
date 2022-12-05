@@ -90,4 +90,8 @@ form input {
   font-weight: 600;
   border:none;
 }
-/* asdas */
+
+.login label {
+  font-family: "Effra";
+  color: rgba(193, 23, 23, 0.76);
+}
