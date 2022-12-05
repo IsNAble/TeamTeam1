@@ -1,0 +1,74 @@
+@font-face {
+  font-family: 'Effra';
+  src: url(../font/Effra.woff) format('woff');
+}
+
+
+body {
+  background-color: #000;
+  color:aliceblue;
+  font-family: 'Effra';
+}
+
+.container {
+  max-width: 1140px ;
+  margin: 0 auto;
+}
+
+ul:not([class]) {
+	text-decoration: none;
+	list-style: none;
+	color: #000;
+}
+
+a {
+	text-decoration: none;
+	color: aliceblue;
+  font-family: 'Effra';
+}
+
+/* nav */
+
+.header{
+  padding-top: 30px;
+}
+
+.nav {
+  display: flex;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav ul {
+  display: flex;
+}
+
+.nav__item:not(:last-child) {
+  margin-right: 40px;
+}
+
+li a {
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.we {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 80px;
+}
+
+.we h2 {
+  font-size: 54px;
+  font-weight: 700;
+}
+
+.we p {
+  font-size: 18px;
+}

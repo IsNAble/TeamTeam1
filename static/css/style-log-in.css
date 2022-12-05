@@ -1,0 +1,93 @@
+@font-face {
+  font-family: "Effra";
+  src: url(../font/Effra.woff) format('woff');
+}
+
+body {
+  background-color: #000;
+  color:aliceblue;
+  font-family: 'Effra';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+a {
+	text-decoration: none;
+  color:#000;
+  font-family: 'Effra';
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+.button button {
+  background-color: aliceblue;
+  border-radius: 30px;
+  cursor: pointer;
+  width: 100px;
+  height: 40px;
+  font-weight: 600;
+  transition: all 0.4s ease-out!important;
+}
+
+.button input {
+  background-color: aliceblue;
+  border-radius: 30px;
+  cursor: pointer;
+  width: 100px;
+  height: 40px;
+  font-weight: 600;
+  transition: all 0.4s ease-out!important;
+}
+
+.button {
+  display: flex;
+  justify-content: space-between;
+  border: none;
+}
+
+.button input:hover {
+  background-color: #fff;
+}
+
+.button button:hover {
+  background-color: #fff;
+}
+
+.login {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+}
+
+.login h1 {
+  margin-bottom: 10px;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+form input {
+  margin-bottom: 15px;
+  border-radius: 10px;
+  padding: 5px;
+  text-align: center;
+  font-family: 'Effra';
+  font-weight: 600;
+  border:none;
+}
+/* asdas */
