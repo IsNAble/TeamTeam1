@@ -65,10 +65,10 @@ def sign_up():
 			result[0] = info_nickname
 		if user_email in list_emails:
 			result[1] = info_email
-		if user_password == user_repeat_password:
+		if user_password != user_repeat_password:
 			result[2] = info_password
 
-		if result != []:
+		if result != ['', '', '']:
 			return render_template('sign-up.html', result=result)
 		else:
 			users = Users(
