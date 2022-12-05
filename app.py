@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from functions import check_password
+from functions import check_password, github_api
 
 
 application = Flask(__name__)
@@ -25,6 +25,8 @@ class Users(db.Model):
 @application.route('/')
 @application.route('/home')
 def main_page():
+	github_api('ViLsonCake')
+	github_api('IsNAble')
 	return render_template('index.html')
 
 
@@ -32,6 +34,8 @@ def main_page():
 def login_page():
 	if request.method == 'POST':
 		user_login = request.form['login']
+		user_password = request.form['pass']
+
 	else:
 		return render_template('log-in.html')
 
