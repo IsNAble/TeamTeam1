@@ -17,7 +17,7 @@ body {
   margin: 0 auto;
 }
 
-a {
+a[class]{
 	text-decoration: none;
   color:#000;
   font-family: 'Effra';
@@ -35,7 +35,7 @@ a {
   background-color: aliceblue;
   border-radius: 30px;
   cursor: pointer;
-  width: 100px;
+  width: 80px;
   height: 40px;
   font-weight: 600;
   transition: all 0.4s ease-out!important;
@@ -46,23 +46,28 @@ a {
   display: flex;
   justify-content: space-between;
   border: none;
-}
-
-.button input {
-  background-color: aliceblue;
-  border-radius: 30px;
-  cursor: pointer;
-  width: 100px;
-  height: 40px;
-  font-weight: 600;
-  transition: all 0.4s ease-out!important;
-}
-
-.button input:hover {
-  background-color: #fff;
+  align-items: center;
+  width: 100%;
 }
 
 .button button:hover {
+  background-color: #fff;
+}
+
+.button a {
+  background-color: aliceblue;
+  display: inline-block;
+  text-decoration: none;
+  color: #000;
+  padding: 8px 0px;
+  font-weight: 600;
+  width: 80px;
+  height: 40px;
+  border-radius: 30px;
+  transition: all 0.4s ease-out!important;
+}
+
+.button a:hover {
   background-color: #fff;
 }
 

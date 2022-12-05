@@ -21,10 +21,22 @@ ul:not([class]) {
 	color: #000;
 }
 
+ul {
+  padding: 0;
+  margin: 0;
+}
+
 a {
 	text-decoration: none;
 	color: aliceblue;
   font-family: 'Effra';
+  font-size: 18px;
+  transition: all 3s ease-in!important;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
 
 /* nav */
@@ -35,6 +47,7 @@ a {
 
 .nav {
   display: flex;
+  justify-content: space-between;
 }
 
 .navbar {
@@ -71,4 +84,25 @@ li a {
 
 .we p {
   font-size: 18px;
+}
+
+.dev-link {
+  display: flex;
+  text-align: center;
+  align-items: center;
+}
+
+.dev-link img {
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+}
+
+.dev:not(:last-child) {
+  margin-right: 20px;
+}
+
+.dev {
+  display: flex;
+  align-items: center;
 }
