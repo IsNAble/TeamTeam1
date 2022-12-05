@@ -48,14 +48,21 @@ def sign_up():
 			list_nicknames.append(i.user_nickname)
 			list_emails.append(i.user_email)
 
-		if user_nickname in list_nicknames:
-			info_nickname = f'Никнейм {user_nickname} занят'
-			return render_template('sign-up.html', info_nickname=info_nickname)
-		if user_email in list_emails:
-			info_email = f'Почта {user_email} уже зарегистрирована'
-			return render_template()
+		info_nickname = f'Никнейм {user_nickname} занят'
+		info_email = f'Почта {user_email} уже зарегистрирована'
+		info_password = 'Пароли не совпадают'
+		result = ['', '', '']
 
+		if user_nickname in list_nicknames:
+			result[0] = info_nickname
+		if user_email in list_emails:
+			result[1] = info_email
 		if user_password == user_repeat_password:
+			result[2] = info_password
+
+		if result != []:
+			return render_template('sign-up.html', result=result)
+		else:
 			users = Users(
 				user_nickname=user_nickname,
 				user_email=user_email,
@@ -69,11 +76,10 @@ def sign_up():
 				return redirect('/home')
 			except:
 				return 'error'
-		else:
-			return 'error'
 
 	else:
-		return render_template('sign-up.html')
+		result = ['', '', '']
+		return render_template('sign-up.html', result=result)
 
 
 
