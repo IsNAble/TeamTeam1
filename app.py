@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from functions import check_password
 
 
 application = Flask(__name__)
@@ -27,9 +28,12 @@ def main_page():
 	return render_template('index.html')
 
 
-@application.route('/login')
+@application.route('/login', methods=['POST', 'GET'])
 def login_page():
-	return render_template('log-in.html')
+	if request.method == 'POST':
+		user_login = request.form['login']
+	else:
+		return render_template('log-in.html')
 
 
 @application.route('/sign-up', methods=['POST', 'GET'])
