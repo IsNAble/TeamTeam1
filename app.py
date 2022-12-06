@@ -110,6 +110,9 @@ def users_list():
 		return render_template('admin.html', table=table)
 
 
+@application.route('/home/<string:user>/<int:user_id>')
+def user(user, user_id):
+	return f'User -> {user}, id -> {user_id}'
 
 
 if __name__ == '__main__':
