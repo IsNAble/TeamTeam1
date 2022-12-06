@@ -40,7 +40,7 @@ def login_page():
 
 		for i in table:
 			if (i.user_nickname == user_login or i.user_email == user_login) and i.user_password == user_password:
-				return redirect('/home')
+				return redirect(f'/home/{i.user_nickname}/{i.user_id}')
 
 		alert = 'Неправильный логин или пароль'
 		return render_template('log-in.html', alert=alert)
@@ -112,7 +112,8 @@ def users_list():
 
 @application.route('/home/<string:user>/<int:user_id>')
 def user(user, user_id):
-	return f'User -> {user}, id -> {user_id}'
+	nickname = user
+	return render_template('homelogin.html', nickname=nickname)
 
 
 if __name__ == '__main__':
