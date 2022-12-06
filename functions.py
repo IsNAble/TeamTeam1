@@ -34,8 +34,6 @@ def github_api(nickname: str):
 	img.write(response_photo.content)
 	img.close()
 
-	#return result
-
 
 if __name__ == '__main__':
 	print(github_api('IsNAble'))
