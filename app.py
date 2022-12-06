@@ -36,8 +36,18 @@ def login_page():
 		user_login = request.form['login']
 		user_password = request.form['pass']
 
+		table = Users.query.all()
+
+		for i in table:
+			if (i.user_nickname == user_login or i.user_email == user_login) and i.user_password == user_password:
+				return redirect('/home')
+
+		alert = 'Неправильный логин или пароль'
+		return render_template('log-in.html', alert=alert)
+
 	else:
-		return render_template('log-in.html')
+		alert = ""
+		return render_template('log-in.html', alert=alert)
 
 
 @application.route('/sign-up', methods=['POST', 'GET'])
