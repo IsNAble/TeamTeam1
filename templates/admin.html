@@ -8,19 +8,19 @@
   <title>Admin Panel</title>
 </head>
 <body>
-  {% for i in table %}
   <section class="section">
     <div class="container">
       <div class="user-list">
+        {% for i in table %}
         <div class="user">
           <span>{{ i.user_id }}</span>
           <span>{{ i.user_nickname }}</span>
           <span>{{ i.user_email }}</span>
           <span>{{ i.user_password }}</span>
         </div>
+        {% endfor %}
       </div>
     </div>
   </section>
-  {% endfor %}
 </body>
 </html>
