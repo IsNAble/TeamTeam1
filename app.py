@@ -100,6 +100,16 @@ def sign_up():
 		return render_template('sign-up.html', result=result)
 
 
+@application.route('/users', methods=['POST', 'GET'])
+def users_list():
+	if request.method == 'POST':
+		pass
+	else:
+		table = Users.query.all()
+
+		return render_template('admin.html', table=table)
+
+
 
 
 if __name__ == '__main__':

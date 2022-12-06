@@ -11,26 +11,14 @@
   <section class="section">
     <div class="container">
       <div class="user-list">
+        {% for i in table %}
         <div class="user">
-          <span>Hwesus</span>
-          <span>rizeggwp@gmail.comasdasdaasdasada</span>
-          <span>Password</span>
+          <span>{{ i.user_id }}</span>
+          <span>{{ i.user_nickname }}</span>
+          <span>{{ i.user_email }}</span>
+          <span>{{ i.user_password }}</span>
         </div>
-        <div class="user">
-          <span>Hwesus</span>
-          <span>rizeggwp@gmail.comasdasdaasdasada</span>
-          <span>Password</span>
-        </div>
-        <div class="user">
-          <span>Hwesus</span>
-          <span>rizeggwp@gmail.comasdasdaasdasada</span>
-          <span>Password</span>
-        </div>
-        <div class="user">
-          <span>Hwesus</span>
-          <span>rizeggwp@gmail.comasdasdaasdasada</span>
-          <span>Password</span>
-        </div>
+        {% endfor %}
       </div>
     </div>
   </section>
