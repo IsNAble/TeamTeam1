@@ -72,6 +72,7 @@ header {
   resize: none;
   background-color: #fff;
   opacity: 0.9;
+  border-radius: 10px;
 }
 
 .group-info {

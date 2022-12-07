@@ -58,9 +58,18 @@ a {
   flex-direction: column;
 }
 
+.user-info a {
+  margin: 10px 0px;
+}
+
+form input {
+  background-color: #fff;;
+  border-radius: 10px;
+}
+
 .user-info input {
   width: 150px;
-  
+
 }
 
 .info {
@@ -77,11 +86,13 @@ a {
   max-width: 100%;
   max-height: 200px;
   opacity: 0.9;
+  border-radius: 10px;
 }
 
 .textarea-name {
   width: 400px;
   opacity: 0.9;
+  border-radius: 10px;
 }
 
 .button-submit {
