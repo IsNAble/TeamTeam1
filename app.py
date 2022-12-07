@@ -16,6 +16,12 @@ class Users(db.Model):
 	user_email = db.Column(db.String(30), nullable=False)
 	user_password = db.Column(db.String(30), nullable=False)
 	user_repeat_password = db.Column(db.String(30), nullable=False)
+	user_description = db.Column(db.Text, default="")
+	user_avatar = db.Column(db.String(50), default="Circle_Davys-Grey_Solid.svg.png")
+	user_first_name = db.Column(db.String(30), default="")
+	user_last_name = db.Column(db.String(30), default="")
+	user_phone_number = db.Column(db.String(30), default="")
+	user_github_link = db.Column(db.String(50), default="") 
 	date = db.Column(db.DateTime, default=datetime.utcnow)
 
 	def __repr__(self):
