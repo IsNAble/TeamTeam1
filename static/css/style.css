@@ -84,6 +84,7 @@ li a {
 
 .we p {
   font-size: 18px;
+  opacity: 0.5;
 }
 
 .dev-link {
@@ -93,8 +94,8 @@ li a {
 }
 
 .dev-link img {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   margin-right: 5px;
   border-radius: 17px;
 }

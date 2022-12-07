@@ -1,0 +1,64 @@
+@font-face {
+  font-family: 'Effra';
+  src: url(../../font/Effra.woff) format('woff');
+}
+
+
+body {
+  background-color: #000;
+  color:aliceblue;
+  font-family: 'Effra';
+}
+
+dd {
+  margin-left: 0;
+}
+
+a {
+	text-decoration: none;
+	color: aliceblue;
+  font-family: 'Effra';
+  font-size: 18px;
+}
+
+.container {
+  max-width: 1140px ;
+  margin: 0 auto;
+}
+
+.user-info img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5px;
+  
+}
+
+.aside-user {
+  width: 300px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.hero {
+  display: flex;
+  padding-top: 10px;
+}
+
+.user-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.info {
+  width: 700px;
+}
+
+.subhead {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
