@@ -35,6 +35,14 @@ def login_page():
 	if request.method == 'POST':
 		user_login = request.form['login']
 		user_password = request.form['pass']
+		inputs = []
+		inputs.append(user_login)
+		inputs.append(user_password)
+
+		if all(inputs) is False:
+			alert = 'Поля не могут быть пустыми'
+			return render_template('log-in.html', alert=alert)
+
 
 		table = Users.query.all()
 
@@ -57,6 +65,16 @@ def sign_up():
 		user_password = request.form['password']
 		user_repeat_password = request.form['repeatpassword']
 		user_nickname = request.form['nickname']
+		inputs = []
+		result = ['', '', '']
+		inputs.append(user_email)
+		inputs.append(user_password)
+		inputs.append(user_repeat_password)
+		inputs.append(user_nickname)
+
+		if all(inputs) is False:
+			result[0] = 'Поля не могут быть пустыми'
+			return render_template('sign-up.html', result=result) 
 
 		list_nicknames, list_emails = [], []
 
@@ -69,7 +87,6 @@ def sign_up():
 		info_nickname = f'Никнейм {user_nickname} занят'
 		info_email = f'Почта {user_email} уже зарегистрирована'
 		info_password = 'Пароли не совпадают'
-		result = ['', '', '']
 
 		if user_nickname in list_nicknames:
 			result[0] = info_nickname
@@ -114,6 +131,17 @@ def users_list():
 def user(user, user_id):
 	nickname = user
 	return render_template('homelogin.html', nickname=nickname)
+
+
+@application.route('/profile/<string:user>/<user_id>', methods=['POST', 'GET'])
+def profile(user, user_id):
+	if request.method == 'POST':
+		pass
+	else:
+		table = Users.query.all()
+		return render_template('profile.html', table=table)
+
+
 
 
 if __name__ == '__main__':
