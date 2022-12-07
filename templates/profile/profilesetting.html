@@ -17,7 +17,7 @@
             <img src="../../static/img/Circle_Davys-Grey_Solid.svg.png" alt="Icon">
             <a href="#"> {{ nickname }} </a>
             <form action="" method="post">
-            <input type="file" name="" id="choose-file" accept=".jpeg, .jpg, .png">
+            <input type="file" name="choose-file" id="choose-file" accept=".jpeg, .jpg, .png">
           </div>
         </div>
         <div class="info">
@@ -27,10 +27,20 @@
             <div>
               <dl class="form-group">
                 <dt>
-                  <label for="#">Name</label>
+                  <label for="#">First name</label>
                 </dt>
                 <dd>
-                  <input type="text" class="textarea-name">
+                  <textarea type="text" class="textarea-name" name="first-name" placeholder="{{ data.user_first_name }}">
+                  </textarea>
+                </dd>
+              </dl>
+              <dl class="form-group">
+                <dt>
+                  <label for="#">Last name</label>
+                </dt>
+                <dd>
+                  <textarea type="text" class="textarea-name" name="last-name" placeholder="{{ data.user_last_name }}"> 
+                  </textarea>
                 </dd>
               </dl>
               <dl class="form-group">

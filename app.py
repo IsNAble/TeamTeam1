@@ -135,8 +135,13 @@ def users_list():
 
 @application.route('/home/<string:user>/<int:user_id>')
 def user(user, user_id):
-	nickname = user
-	return render_template('homelogin.html', nickname=nickname)
+	table = Users.query.all()
+
+	for i in range(len(table)):
+		if table[i].user_nickname == user:
+			data = table[i] 
+
+			return render_template('homelogin.html', data=data)
 
 
 @application.route('/profile/<string:user>/<user_id>', methods=['POST', 'GET'])
@@ -145,7 +150,34 @@ def profile(user, user_id):
 		pass
 	else:
 		table = Users.query.all()
-		return render_template('profile.html', table=table)
+
+		for i in range(len(table)):
+			if table[i].user_nickname == user:
+				data = table[i]
+				if data.user_first_name == "":
+					data.user_first_name = 'No data'
+				if data.user_last_name == "":
+					data.user_last_name = 'No data'
+
+				return render_template('profile/profile.html', data=data)
+
+
+@application.route('/edit-profile/<string:user>/<int:user_id>', methods=['POST', 'GET'])
+def edit_profile(user, user_id):
+	if request.method == 'POST':
+		pass
+	else:
+		table = Users.query.all()
+
+		for i in range(len(table)):
+			if table[i].user_nickname == user:
+				data = table[i]
+				if data.user_first_name == "":
+					data.user_first_name = 'No data'
+				if data.user_last_name == "":
+					data.user_last_name = 'No data'
+
+				return render_template('profile/profilesetting.html', data=data)
 
 
 

@@ -12,7 +12,7 @@
   <header class="header">
     <div class="container">
       <div class="button-back">
-        <a class="link-button" href="/home">Go back</a>
+        <a class="link-button" href="/home/{{ data.user_nickname }}/{{ data.user_id }}">Go back</a>
       </div>
     </div>
   </header>
@@ -21,9 +21,9 @@
       <div class="hero">
         <div class="aside-user">
           <div class="user-info">
-            <img src="../../static/img/Circle_Davys-Grey_Solid.svg.png" alt="Icon">
-            <a href="#"> {{ nickname }} </a>
-            <a class="link-button" href="/edit-profile">Edit profile</a>
+            <img src="../../static/img/{{ data.user_avatar }}" alt="Icon">
+            <a href="#"> {{ data.user_nickname }} </a>
+            <a class="link-button" href="/edit-profile/{{ data.user_nickname }}/{{ data.user_id }}">Edit profile</a>
           </div>
         </div>
         <div class="info">
@@ -36,7 +36,7 @@
                 <label for="">First name</label>
               </dt>
               <dd>
-                <textarea name="" id="" cols="30" rows="1" disabled="disabled"></textarea>
+                <textarea name="" id="" cols="30" rows="1" disabled="disabled">{{ data.user_first_name }}</textarea>
               </dd>
             </dl>
             <dl class="group-info">
@@ -44,7 +44,7 @@
                 <label for="">Last name</label>
               </dt>
               <dd>
-                <textarea name="" id="" cols="30" rows="1" disabled="disabled"></textarea>
+                <textarea name="" id="" cols="30" rows="1" disabled="disabled">{{ data.user_last_name  }}</textarea>
               </dd>
             </dl>
             <dl class="group-info">
@@ -52,7 +52,7 @@
                 <label for="">Email</label>
               </dt>
               <dd>
-                <textarea name="" id="" cols="30" rows="1" disabled="disabled"></textarea>
+                <textarea name="" id="" cols="30" rows="1" disabled="disabled">{{ data.user_email }}</textarea>
               </dd>
             </dl>
           </div>
