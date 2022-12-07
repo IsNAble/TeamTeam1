@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../static/css/reset.css">
+  <link rel="stylesheet" href="../../static/css/profile/profilesetting.css">
+  <title>Profile setting</title>
+</head>
+<body>
+  <main class="main">
+    <div class="container">
+      <div class="hero">
+        <div class="aside-user">
+          <div class="user-info">
+            <img src="../../static/img/Circle_Davys-Grey_Solid.svg.png" alt="Icon">
+            <a href="#"> {{ nickname }} </a>
+            <form action="" method="post">
+            <input type="file" name="" id="choose-file" accept=".jpeg, .jpg, .png">
+          </div>
+        </div>
+        <div class="info">
+          <div class="subhead">
+            <h2>Profile</h2>
+          </div>
+            <div>
+              <dl class="form-group">
+                <dt>
+                  <label for="#">Name</label>
+                </dt>
+                <dd>
+                  <input type="text" class="textarea-name">
+                </dd>
+              </dl>
+              <dl class="form-group">
+                <dt>
+                  <label for="#">Bio</label>
+                </dt>
+                <dd>
+                  <textarea name="textarea" id="textarea-bio" cols="30" rows="3" placeholder="Tell us about yourself" class="textarea-bio"></textarea>
+                </dd>
+              </dl>
+              <button type="submit" class="button-submit">Update profile</button>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

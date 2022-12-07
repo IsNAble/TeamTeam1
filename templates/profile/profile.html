@@ -9,26 +9,50 @@
   <title>Profile</title>
 </head>
 <body>
-  <main class="main">
+  <header class="header">
+    <div class="container">
+      <div class="button-back">
+        <a class="link-button" href="/home">Go back</a>
+      </div>
+    </div>
+  </header>
+  <main>
     <div class="container">
       <div class="hero">
         <div class="aside-user">
           <div class="user-info">
             <img src="../../static/img/Circle_Davys-Grey_Solid.svg.png" alt="Icon">
             <a href="#"> {{ nickname }} </a>
+            <a class="link-button" href="/edit-profile">Edit profile</a>
           </div>
         </div>
         <div class="info">
           <div class="subhead">
-            <h2>Profile</h2>
+            <h2>Info</h2>
           </div>
-          <div class="bio">
-            <dl class="form-group">
+          <div>
+            <dl class="group-info">
               <dt>
-                <label for="#">Bio</label>
+                <label for="">First name</label>
               </dt>
               <dd>
-                <textarea name="textarea" id="textarea" cols="30" rows="10" placeholder="Tell us about yourself"></textarea>
+                <textarea name="" id="" cols="30" rows="1" disabled="disabled"></textarea>
+              </dd>
+            </dl>
+            <dl class="group-info">
+              <dt>
+                <label for="">Last name</label>
+              </dt>
+              <dd>
+                <textarea name="" id="" cols="30" rows="1" disabled="disabled"></textarea>
+              </dd>
+            </dl>
+            <dl class="group-info">
+              <dt>
+                <label for="">Email</label>
+              </dt>
+              <dd>
+                <textarea name="" id="" cols="30" rows="1" disabled="disabled"></textarea>
               </dd>
             </dl>
           </div>

@@ -21,6 +21,8 @@ def github_api(nickname: str):
 		name_photo = 'ViLson.png'
 	elif nickname == 'IsNAble':
 		name_photo = 'Hwesus.png'
+	else:
+		name_photo = 'someone.png'
 
 	url = f'https://api.github.com/users/{nickname}'
 
@@ -35,5 +37,7 @@ def github_api(nickname: str):
 	img.close()
 
 
+
+
 if __name__ == '__main__':
-	print(github_api('IsNAble'))
+	pass

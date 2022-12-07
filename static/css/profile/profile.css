@@ -8,10 +8,7 @@ body {
   background-color: #000;
   color:aliceblue;
   font-family: 'Effra';
-}
-
-dd {
-  margin-left: 0;
+  font-size: 18px;
 }
 
 a {
@@ -21,44 +18,62 @@ a {
   font-size: 18px;
 }
 
+
+header {
+  padding-top: 20px;
+}
+
 .container {
-  max-width: 1140px ;
+  max-width: 1440px ;
   margin: 0 auto;
 }
 
-.user-info img {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 5px;
-  
-}
-
 .aside-user {
-  width: 300px;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  height: 100vh;
+  width: 400px;
 }
 
 .hero {
   display: flex;
-  padding-top: 10px;
-}
 
-.user-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
 }
 
 .info {
   width: 700px;
 }
 
-.subhead {
+.user-info img {
+  width: 256px;
+  height: 256px;
+}
+
+.user-info a {
+  margin: 10px 0px;
+}
+
+.link-button {
+  background-color: aliceblue;
+  border-radius: 30px;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-weight: 600;
+  border-width: 0;
+  color:#000;
+}
+
+.user-info {
   display: flex;
-  justify-content: center;
   align-items: center;
+  flex-direction: column;
+  padding-top: 120px;
+}
+
+.group-info textarea {
+  width: 300px;
+  resize: none;
+  background-color: #fff;
+  opacity: 0.9;
+}
+
+.group-info {
+  margin: 40px 0px;
 }
