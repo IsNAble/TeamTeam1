@@ -107,3 +107,9 @@ form input {
 .form-group {
   margin: 40px 0px;
 }
+
+#display-image {
+  background: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
