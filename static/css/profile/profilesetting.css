@@ -26,8 +26,12 @@ a {
   font-size: 18px;
 }
 
+header {
+  padding: 20px;
+}
+
 .container {
-  max-width: 1140px ;
+  max-width: 1440px ;
   margin: 0 auto;
 }
 
@@ -85,23 +89,52 @@ form input {
   width: 400px;
   max-width: 100%;
   max-height: 200px;
-  opacity: 0.9;
   border-radius: 10px;
+  resize: none;
+  transition: all 0.3s ease-out !important;
+}
+
+.form-group textarea:focus {
+  opacity: 0.9;
 }
 
 .textarea-name {
   width: 400px;
-  opacity: 0.9;
   border-radius: 10px;
+  transition: all 0.3s ease-out !important;
+}
+
+.textarea-name:focus {
+  opacity: 0.9;
 }
 
 .button-submit {
   background-color: aliceblue;
   border-radius: 30px;
   cursor: pointer;
-  padding: 5px;
+  padding: 5px 10px;
   font-weight: 600;
   border-width: 0;
+  transition: all 0.3s ease-out !important;
+}
+
+.button-submit:hover {
+  background-color: #fff;
+}
+
+.link-button {
+  background-color: aliceblue;
+  border-radius: 30px;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-weight: 600;
+  border-width: 0;
+  color:#000;
+  transition: all 0.4s ease-out!important;
+}
+
+.link-button:hover {
+  background-color: #fff;
 }
 
 .form-group {
