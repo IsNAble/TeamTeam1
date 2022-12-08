@@ -16,6 +16,16 @@ def check_password(password: str) -> bool:
 	return upper and lower
 
 
+def check_extension(filename):
+	extensions = ('jpg', 'jpeg', 'png')
+
+	if '.' in filename:
+		extension = filename.split('.')[-1].lower()
+		return extension in extensions	
+	else:
+		return False
+
+
 def github_api(nickname: str):
 	if nickname == 'ViLsonCake':
 		name_photo = 'ViLson.png'

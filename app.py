@@ -1,11 +1,13 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+#from werkzeug import secure_filename
 from datetime import datetime
-from functions import check_password, github_api
+from functions import check_password, github_api, check_extension
 
 
 application = Flask(__name__)
 application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+application.config['UPLOAD_FOLDER'] = 'C:/Users/user/PycharmProjects/Team-site/static/img/'
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(application)
@@ -116,7 +118,7 @@ def sign_up():
 				db.session.commit()
 				return redirect('/home')
 			except:
-				return 'error'
+				return 'error'	
 
 	else:
 		result = ['', '', '']
@@ -147,7 +149,11 @@ def user(user, user_id):
 @application.route('/profile/<string:user>/<user_id>', methods=['POST', 'GET'])
 def profile(user, user_id):
 	if request.method == 'POST':
+		#file = request.files['file']
+		#file.save(file.filename)
+		#return redirect(f'/home/{user}/{user_id}')
 		pass
+
 	else:
 		table = Users.query.all()
 
@@ -165,7 +171,23 @@ def profile(user, user_id):
 @application.route('/edit-profile/<string:user>/<int:user_id>', methods=['POST', 'GET'])
 def edit_profile(user, user_id):
 	if request.method == 'POST':
-		pass
+		file = request.files['file']
+		current_user = Users.query.get(user_id)
+
+		if file.filename == '' or check_extension(file.filename) is False:
+			return 'Произошла ошибка'
+
+		user_avatar_path = application.config['UPLOAD_FOLDER'] + user + str(user_id) + file.filename
+
+		current_user.user_avatar = user_avatar_path
+
+		try:
+			db.session.commit()
+		except:
+			return 'Произошла ошибка'
+
+		file.save(user_avatar_url)
+		return redirect(f'/home/{user}/{user_id}')
 	else:
 		table = Users.query.all()
 
