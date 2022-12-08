@@ -174,32 +174,33 @@ def edit_profile(user, user_id):
 		file = request.files['file']
 		current_user = Users.query.get(user_id)
 
-		if file.filename == '' or check_extension(file.filename) is False:
-			return 'Произошла ошибка'
+		if check_extension(file.filename) is False and file.filename != '':
+			return 'Произошла ошибка, недопустимое расширение'
 
-		user_avatar_path = application.config['UPLOAD_FOLDER'] + user + str(user_id) + file.filename
+		if file.filename == '':
+			return redirect(f'/home/{user}/{user_id}')
 
-		current_user.user_avatar = user_avatar_path
+		user_avatar_path = 'static/img/' + user + str(user_id) + file.filename
+		filename = user + str(user_id) + file.filename
+
+		current_user.user_avatar = filename
 
 		try:
 			db.session.commit()
 		except:
 			return 'Произошла ошибка'
 
-		file.save(user_avatar_url)
+		file.save(user_avatar_path)
 		return redirect(f'/home/{user}/{user_id}')
 	else:
-		table = Users.query.all()
+		data = Users.query.get(user_id)
+		
+		if data.user_first_name == "":
+			data.user_first_name = 'No data'
+		if data.user_last_name == "":
+			data.user_last_name = 'No data'
 
-		for i in range(len(table)):
-			if table[i].user_nickname == user:
-				data = table[i]
-				if data.user_first_name == "":
-					data.user_first_name = 'No data'
-				if data.user_last_name == "":
-					data.user_last_name = 'No data'
-
-				return render_template('profile/profilesetting.html', data=data)
+		return render_template('profile/profilesetting.html', data=data)
 
 
 
