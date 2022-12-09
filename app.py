@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 #from werkzeug import secure_filename
 from datetime import datetime
-from functions import check_password, github_api, check_extension
+from functions import check_password, github_api, check_extension, generate_key
 
 
 application = Flask(__name__)
@@ -33,8 +33,6 @@ class Users(db.Model):
 @application.route('/')
 @application.route('/home')
 def main_page():
-	github_api('ViLsonCake')
-	github_api('IsNAble')
 	return render_template('index.html')
 
 
@@ -72,13 +70,13 @@ def sign_up():
 		user_email = request.form['email']
 		user_password = request.form['password']
 		user_repeat_password = request.form['repeatpassword']
-		user_nickname = request.form['nickname']
+		this_user_nickname = request.form['nickname']
 		inputs = []
 		result = ['', '', '']
 		inputs.append(user_email)
 		inputs.append(user_password)
 		inputs.append(user_repeat_password)
-		inputs.append(user_nickname)
+		inputs.append(this_user_nickname)
 
 		if all(inputs) is False:
 			result[0] = 'Поля не могут быть пустыми'
@@ -92,11 +90,11 @@ def sign_up():
 			list_nicknames.append(i.user_nickname)
 			list_emails.append(i.user_email)
 
-		info_nickname = f'Никнейм {user_nickname} занят'
+		info_nickname = f'Никнейм {this_user_nickname} занят'
 		info_email = f'Почта {user_email} уже зарегистрирована'
 		info_password = 'Пароли не совпадают'
 
-		if user_nickname in list_nicknames:
+		if this_user_nickname in list_nicknames:
 			result[0] = info_nickname
 		if user_email in list_emails:
 			result[1] = info_email
@@ -107,7 +105,7 @@ def sign_up():
 			return render_template('sign-up.html', result=result)
 		else:
 			users = Users(
-				user_nickname=user_nickname,
+				user_nickname=this_user_nickname,
 				user_email=user_email,
 				user_password=user_password,
 				user_repeat_password=user_repeat_password
@@ -116,23 +114,35 @@ def sign_up():
 			try:
 				db.session.add(users)
 				db.session.commit()
-				return redirect('/home')
 			except:
 				return 'error'	
+
+			table = Users.query.all()
+
+			for i in range(len(table)):
+				if table[i].user_nickname == this_user_nickname:
+					return redirect(f'/home/{table[i].user_nickname}/{table[i].user_id}')
 
 	else:
 		result = ['', '', '']
 		return render_template('sign-up.html', result=result)
 
 
-@application.route('/users', methods=['POST', 'GET'])
-def users_list():
+@application.route('/users=<string:key>', methods=['POST', 'GET'])
+def users_list(key):
 	if request.method == 'POST':
 		pass
 	else:
-		table = Users.query.all()
+		with open('secret-key.txt', 'r', encoding='utf-8') as file:
+			output = file.readlines()
+			current_key = output[0]
 
-		return render_template('admin.html', table=table)
+		if str(current_key) == str(key):
+			table = Users.query.all()
+
+			return render_template('admin.html', table=table)
+		else:
+			return f'{key} {current_key}'
 
 
 @application.route('/home/<string:user>/<int:user_id>')
@@ -149,11 +159,7 @@ def user(user, user_id):
 @application.route('/profile/<string:user>/<user_id>', methods=['POST', 'GET'])
 def profile(user, user_id):
 	if request.method == 'POST':
-		#file = request.files['file']
-		#file.save(file.filename)
-		#return redirect(f'/home/{user}/{user_id}')
 		pass
-
 	else:
 		table = Users.query.all()
 
@@ -172,25 +178,44 @@ def profile(user, user_id):
 def edit_profile(user, user_id):
 	if request.method == 'POST':
 		file = request.files['file']
+		first_name = request.form['first-name']
+		last_name = request.form['last-name']
+		description = request.form['textarea']
 		current_user = Users.query.get(user_id)
+		flag = True
+
+		current_user = Users.query.get(user_id)
+
+		if first_name == '':
+			first_name = current_user.user_first_name
+		if last_name == '':
+			last_name = current_user.user_last_name
+		if description == '':
+			description = current_user.user_description
 
 		if check_extension(file.filename) is False and file.filename != '':
 			return 'Произошла ошибка, недопустимое расширение'
 
 		if file.filename == '':
-			return redirect(f'/home/{user}/{user_id}')
+			flag = False
 
-		user_avatar_path = 'static/img/' + user + str(user_id) + file.filename
-		filename = user + str(user_id) + file.filename
+		if flag:
+			user_avatar_path = 'static/img/' + user + str(user_id) + file.filename
+			filename = user + str(user_id) + file.filename
+			current_user.user_avatar = filename
 
-		current_user.user_avatar = filename
+		current_user.user_first_name = first_name
+		current_user.user_last_name = last_name
+		current_user.user_description = description
 
 		try:
 			db.session.commit()
 		except:
 			return 'Произошла ошибка'
 
-		file.save(user_avatar_path)
+		if flag:
+			file.save(user_avatar_path)
+
 		return redirect(f'/home/{user}/{user_id}')
 	else:
 		data = Users.query.get(user_id)
@@ -206,4 +231,8 @@ def edit_profile(user, user_id):
 
 
 if __name__ == '__main__':
+	github_api('ViLsonCake')
+	github_api('IsNAble')
+	generate_key('secret-key.txt')
+
 	application.run(debug=True)

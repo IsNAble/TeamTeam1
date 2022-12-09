@@ -1,6 +1,7 @@
 import requests
 import json
 import re
+from random import sample
 
 def check_password(password: str) -> bool:
 	upper = False
@@ -16,7 +17,7 @@ def check_password(password: str) -> bool:
 	return upper and lower
 
 
-def check_extension(filename):
+def check_extension(filename: str) -> bool:
 	extensions = ('jpg', 'jpeg', 'png')
 
 	if '.' in filename:
@@ -24,6 +25,30 @@ def check_extension(filename):
 		return extension in extensions	
 	else:
 		return False
+
+
+def generate_key(filename: str, length=6) -> None:
+	try:
+		with open(filename, 'r', encoding='utf-8') as file:
+			output = file.readlines()
+			current_key = output[0]
+			count = int(output[-1].split()[-1])
+
+		if count % 10 == 0:
+			count += 1
+			lower_case = "qwertyuiopasdfghjklzzxcvbnm"
+			upper_case = "QWERTYUIOPASDFGHJKLZXCVBNM"
+			numbers = "0123456789"
+			string = lower_case + upper_case + numbers
+			current_key = ''.join(sample(string, length))
+		else:
+			count += 1
+
+		with open(filename, 'w', encoding='utf-8') as file:
+			file.write(f'{current_key}\ncount: {count}')
+
+	except FileNotFoundError:
+		return 'Файла не существует'
 
 
 def github_api(nickname: str):
