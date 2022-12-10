@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-#from werkzeug import secure_filename
 from datetime import datetime
 from functions import check_password, github_api, check_extension, generate_key
 
@@ -137,12 +136,14 @@ def users_list(key):
 			output = file.readlines()
 			current_key = output[0]
 
-		if str(current_key) == str(key):
+		string = f'{current_key} {key}'.split()
+
+		if string[0] == string[1]:
 			table = Users.query.all()
 
 			return render_template('admin.html', table=table)
 		else:
-			return f'{key} {current_key}'
+			return '404 NOT FOUND'
 
 
 @application.route('/home/<string:user>/<int:user_id>')
@@ -231,8 +232,8 @@ def edit_profile(user, user_id):
 
 
 if __name__ == '__main__':
-	github_api('ViLsonCake')
-	github_api('IsNAble')
+	#github_api('ViLsonCake')
+	#github_api('IsNAble')
 	generate_key('secret-key.txt')
 
 	application.run(debug=True)
