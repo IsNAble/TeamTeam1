@@ -37,7 +37,7 @@
                   <label for="#">First name</label>
                 </dt>
                 <dd>
-                  <textarea type="text" class="textarea-name" name="first-name" placeholder="{{ data.user_first_name }}"> </textarea>
+                  <textarea type="text" class="textarea-name" name="first-name" placeholder="{{ data.user_first_name }}"></textarea>
                 </dd>
               </dl>
               <dl class="form-group">
@@ -45,7 +45,7 @@
                   <label for="#">Last name</label>
                 </dt>
                 <dd>
-                  <textarea type="text" class="textarea-name" name="last-name" placeholder="{{ data.user_last_name }}"> </textarea>
+                  <textarea type="text" class="textarea-name" name="last-name" placeholder="{{ data.user_last_name }}"></textarea>
                 </dd>
               </dl>
               <dl class="form-group">
@@ -53,7 +53,7 @@
                   <label for="#">Bio</label>
                 </dt>
                 <dd>
-                  <textarea name="textarea" id="textarea-bio" cols="30" rows="3" placeholder="Tell us about yourself" class="textarea-bio"></textarea>
+                  <textarea name="textarea" id="textarea-bio" cols="30" rows="3" placeholder="{{ data.user_description }}" class="textarea-bio"></textarea>
                 </dd>
               </dl>
               <button type="submit" class="button-submit">Update profile</button>
@@ -63,7 +63,6 @@
       </div>
     </div>
   </main>
-  <!-- <script src="../../static/js/script.js"></script> -->
   <script></script>
 </body>
 </html>

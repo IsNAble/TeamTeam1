@@ -148,13 +148,12 @@ def users_list(key):
 
 @application.route('/home/<string:user>/<int:user_id>')
 def user(user, user_id):
-	table = Users.query.all()
+	data = Users.query.get(user_id)
 
-	for i in range(len(table)):
-		if table[i].user_nickname == user:
-			data = table[i] 
-
-			return render_template('homelogin.html', data=data)
+	if data is not None and data.user_nickname == user:
+		return render_template('homelogin.html', data=data)
+	else:
+		return 'User not found'
 
 
 @application.route('/profile/<string:user>/<user_id>', methods=['POST', 'GET'])
@@ -225,6 +224,8 @@ def edit_profile(user, user_id):
 			data.user_first_name = 'No data'
 		if data.user_last_name == "":
 			data.user_last_name = 'No data'
+		if data.user_description == "":
+			data.user_description = 'No data'
 
 		return render_template('profile/profilesetting.html', data=data)
 
