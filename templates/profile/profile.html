@@ -12,7 +12,7 @@
   <header class="header">
     <div class="container">
       <div class="button-back">
-        <a class="link-button" href="/home/{{ data.user_nickname }}/{{ data.user_id }}">Go back</a>
+        <a class="link-button" href="/home/{{ data.user_nickname }}/{{ data.user_id }}={{ current_key }}">Go back</a>
       </div>
     </div>
   </header>
@@ -23,7 +23,7 @@
           <div class="user-info">
             <img src="../../static/img/{{ data.user_avatar }}" alt="Icon">
             <a href="#"> {{ data.user_nickname }} </a>
-            <a class="link-button" href="/edit-profile/{{ data.user_nickname }}/{{ data.user_id }}">Edit profile</a>
+            <a class="link-button" href="/edit-profile/{{ data.user_nickname }}/{{ data.user_id }}={{ current_key}}">Edit profile</a>
           </div>
         </div>
         <div class="info">

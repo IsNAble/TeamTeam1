@@ -1,7 +1,8 @@
+from random import sample
 import requests
 import json
 import re
-from random import sample
+
 
 def check_password(password: str) -> bool:
 	upper = False
@@ -27,7 +28,7 @@ def check_extension(filename: str) -> bool:
 		return False
 
 
-def generate_key(filename: str, length=6) -> None:
+def generate_admin_key(filename: str, length=6) -> None:
 	try:
 		with open(filename, 'r', encoding='utf-8') as file:
 			output = file.readlines()
@@ -46,6 +47,21 @@ def generate_key(filename: str, length=6) -> None:
 
 		with open(filename, 'w', encoding='utf-8') as file:
 			file.write(f'{current_key}\ncount: {count}')
+
+	except FileNotFoundError:
+		return 'Файла не существует'
+
+
+def generate_users_key(filename: str, length=8):
+	try:
+		lower_case = "qwertyuiopasdfghjklzzxcvbnm"
+		upper_case = "QWERTYUIOPASDFGHJKLZXCVBNM"
+		numbers = "0123456789"
+		string = lower_case + upper_case + numbers
+		current_key = ''.join(sample(string, length))
+
+		with open(filename, 'w', encoding='utf-8') as file:
+			file.write(current_key)
 
 	except FileNotFoundError:
 		return 'Файла не существует'

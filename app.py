@@ -1,12 +1,11 @@
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from functions import check_password, github_api, check_extension, generate_key
+from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key
 
 
 application = Flask(__name__)
 application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-application.config['UPLOAD_FOLDER'] = 'C:/Users/user/PycharmProjects/Team-site/static/img/'
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(application)
@@ -51,9 +50,12 @@ def login_page():
 
 		table = Users.query.all()
 
+		with open('users-key.txt', 'r', encoding='utf-8') as file:
+			current_key = file.read()
+
 		for i in table:
 			if (i.user_nickname == user_login or i.user_email == user_login) and i.user_password == user_password:
-				return redirect(f'/home/{i.user_nickname}/{i.user_id}')
+				return redirect(f'/home/{i.user_nickname}/{i.user_id}={current_key}')
 
 		alert = 'Неправильный логин или пароль'
 		return render_template('log-in.html', alert=alert)
@@ -118,9 +120,12 @@ def sign_up():
 
 			table = Users.query.all()
 
+			with open('users-key.txt', 'r', encoding='utf-8') as file:
+				current_key = file.read()
+
 			for i in range(len(table)):
 				if table[i].user_nickname == this_user_nickname:
-					return redirect(f'/home/{table[i].user_nickname}/{table[i].user_id}')
+					return redirect(f'/home/{table[i].user_nickname}/{table[i].user_id}={current_key}') 
 
 	else:
 		result = ['', '', '']
@@ -146,36 +151,45 @@ def users_list(key):
 			return '404 NOT FOUND'
 
 
-@application.route('/home/<string:user>/<int:user_id>')
-def user(user, user_id):
+@application.route('/home/<string:user>/<int:user_id>=<string:key>')
+def user(user, user_id, key):
 	data = Users.query.get(user_id)
 
-	if data is not None and data.user_nickname == user:
-		return render_template('homelogin.html', data=data)
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read()
+
+	string = f'{current_key} {key}'.split()
+
+	if data is not None and data.user_nickname == user and string[0] == string[1]:
+		return render_template('homelogin.html', data=data, current_key=current_key)
 	else:
 		return 'User not found'
 
 
-@application.route('/profile/<string:user>/<user_id>', methods=['POST', 'GET'])
-def profile(user, user_id):
-	if request.method == 'POST':
-		pass
+@application.route('/profile/<string:user>/<user_id>=<string:key>')
+def profile(user, user_id, key):
+	data = Users.query.get(user_id)
+
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read()
+
+	string = f'{current_key} {key}'.split()
+
+	if data is not None and data.user_nickname == user and string[0] == string[1]:
+		if data.user_first_name == "":
+			data.user_first_name = 'No data'
+		if data.user_last_name == "":
+			data.user_last_name = 'No data'
+		if data.user_description == "":
+			data.user_description = 'No data'
+
+		return render_template('profile/profile.html', data=data, current_key=current_key)
 	else:
-		table = Users.query.all()
-
-		for i in range(len(table)):
-			if table[i].user_nickname == user:
-				data = table[i]
-				if data.user_first_name == "":
-					data.user_first_name = 'No data'
-				if data.user_last_name == "":
-					data.user_last_name = 'No data'
-
-				return render_template('profile/profile.html', data=data)
+		return '404 NOT FOUND'
 
 
-@application.route('/edit-profile/<string:user>/<int:user_id>', methods=['POST', 'GET'])
-def edit_profile(user, user_id):
+@application.route('/edit-profile/<string:user>/<int:user_id>=<string:key>', methods=['POST', 'GET'])
+def edit_profile(user, user_id, key):
 	if request.method == 'POST':
 		file = request.files['file']
 		first_name = request.form['first-name']
@@ -216,18 +230,27 @@ def edit_profile(user, user_id):
 		if flag:
 			file.save(user_avatar_path)
 
-		return redirect(f'/home/{user}/{user_id}')
+		with open('users-key.txt', 'r', encoding='utf-8') as file:
+			current_key = file.read()
+
+		return redirect(f'/home/{user}/{user_id}={current_key}')
 	else:
 		data = Users.query.get(user_id)
 		
-		if data.user_first_name == "":
-			data.user_first_name = 'No data'
-		if data.user_last_name == "":
-			data.user_last_name = 'No data'
-		if data.user_description == "":
-			data.user_description = 'No data'
+		with open('users-key.txt', 'r', encoding='utf-8') as file:
+			current_key = file.read()
 
-		return render_template('profile/profilesetting.html', data=data)
+		string = f'{current_key} {key}'.split()
+
+		if data is not None and data.user_nickname == user and string[0] == string[1]:
+			if data.user_first_name == "":
+				data.user_first_name = 'No data'
+			if data.user_last_name == "":
+				data.user_last_name = 'No data'
+			if data.user_description == "":
+				data.user_description = 'No data'
+
+			return render_template('profile/profilesetting.html', data=data, current_key=current_key)
 
 
 
@@ -235,6 +258,7 @@ def edit_profile(user, user_id):
 if __name__ == '__main__':
 	#github_api('ViLsonCake')
 	#github_api('IsNAble')
-	generate_key('secret-key.txt')
+	generate_admin_key('secret-key.txt')
+	generate_users_key('users-key.txt')
 
 	application.run(debug=True)
