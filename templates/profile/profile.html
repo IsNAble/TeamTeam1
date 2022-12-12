@@ -49,19 +49,22 @@
             </dl>
             <dl class="group-info">
               <dt>
-                <label for="">Email</label>
-              </dt>
-              <dd>
-                <textarea name="" id="" cols="30" rows="1" disabled="disabled">{{ data.user_email }}</textarea>
-              </dd>
-            </dl>
-            <dl class="group-info">
-              <dt>
-                <label for="">Description</label>
+                <label for="">Bio</label>
               </dt>
               <dd>
                 <textarea name="" id="" cols="30" rows="3" disabled="disabled">{{ data.user_description }}</textarea>
               </dd>
+            </dl>
+            <dl class="group-info">
+              <dt>
+                <label for="">Phone number</label>
+              </dt>
+              <dd>
+                <textarea name="" id="" cols="30" rows="1" disabled="disabled">{{ data.user_phone_number }}</textarea>
+              </dd>
+            </dl>
+            <dl class="group-info">
+              <a href="{{ data.user_github_link }}">Github</a>
             </dl>
           </div>
         </div>

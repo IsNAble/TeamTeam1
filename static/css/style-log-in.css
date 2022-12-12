@@ -1,12 +1,12 @@
 @font-face {
-  font-family: "Effra";
-  src: url(../font/Effra.woff) format('woff');
+  font-family:"Bookerly" ;
+  src: url(../font/Bookerly.ttf) format('opentype');
 }
 
 body {
   background-color: #000;
   color:aliceblue;
-  font-family: 'Effra';
+  font-family: 'Bookerly';
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,7 +20,7 @@ body {
 a[class] {
 	text-decoration: none;
   color:#000;
-  font-family: 'Effra';
+  font-family: 'Bookerly';
 }
 
 .wrapper {
@@ -92,7 +92,7 @@ form input {
   border-radius: 10px;
   padding: 5px;
   text-align: center;
-  font-family: 'Effra';
+  font-family: 'Bookerly';
   font-weight: 600;
   border: none;
   transition: all 0.3s ease-out!important;
@@ -103,6 +103,6 @@ form input:focus {
 }
 
 .login label {
-  font-family: "Effra";
+  font-family: "Bookerly";
   color: rgba(193, 23, 23, 0.76);
 }

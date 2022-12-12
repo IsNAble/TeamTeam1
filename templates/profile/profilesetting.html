@@ -50,11 +50,46 @@
               </dl>
               <dl class="form-group">
                 <dt>
+                  <label for="#">Nickname</label>
+                </dt>
+                <dd>
+                  <textarea type="text" class="textarea-name" name="nickname" placeholder="{{ data.user_nickname }}"></textarea>
+                </dd>
+              </dl>
+              <dl class="form-group">
+                <dt>
+                  <label for="#">Email</label>
+                </dt>
+                <dd>
+                  <textarea type="text" class="textarea-name" name="email" placeholder="{{ data.user_email }}"></textarea>
+                </dd>
+              </dl>
+              <dl class="form-group">
+                <dt>
                   <label for="#">Bio</label>
                 </dt>
                 <dd>
                   <textarea name="textarea" id="textarea-bio" cols="30" rows="3" placeholder="{{ data.user_description }}" class="textarea-bio"></textarea>
                 </dd>
+              </dl>
+              <dl class="form-group">
+                <dt>
+                  <label for="#">Phone number</label>
+                </dt>
+                <dd>
+                  <textarea type="text" class="textarea-name" name="phone-number" placeholder="{{ data.user_phone_number }}"></textarea>
+                </dd>
+              </dl>
+              <dl class="form-group">
+                <dt>
+                  <label for="#">Github</label>
+                </dt>
+                <dd>
+                  <textarea type="text" class="textarea-name" name="github" placeholder="{{ data.user_github_link }}"></textarea>
+                </dd>
+              </dl>
+              <dl class="form-group">
+                <a href="#">Change password</a>
               </dl>
               <button type="submit" class="button-submit">Update profile</button>
           </form>

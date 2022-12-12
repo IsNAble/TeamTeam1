@@ -1,13 +1,12 @@
 @font-face {
-  font-family: 'Effra';
-  src: url(../font/Effra.woff) format('woff');
+  font-family:"Bookerly" ;
+  src: url(../font/Bookerly.ttf) format('opentype');
 }
-
 
 body {
   background-color: #000;
   color:aliceblue;
-  font-family: 'Effra';
+  font-family: 'Bookerly';
 }
 
 .container {
@@ -29,7 +28,7 @@ ul {
 a {
 	text-decoration: none;
 	color: aliceblue;
-  font-family: 'Effra';
+  font-family: 'Bookerly';
   font-size: 18px;
   transition: all 3s ease-in!important;
 }
@@ -49,6 +48,10 @@ a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.nav a:not(:last-child) {
+  margin-right: 10px;
 }
 
 .nav span {

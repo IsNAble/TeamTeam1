@@ -1,12 +1,12 @@
 @font-face {
-  font-family: 'Effra';
-  src: url(../font/Effra.woff) format('woff');
+  font-family:"Bookerly" ;
+  src: url(../font/Bookerly.ttf) format('opentype');
 }
 
 body {
   background-color: #000;
   color:aliceblue;
-  font-family: 'Effra';
+  font-family: 'Bookerly';
 }
 
 .container {

@@ -1,13 +1,12 @@
 @font-face {
-  font-family: 'Effra';
-  src: url(../../font/Effra.woff) format('woff');
+  font-family:"Bookerly" ;
+  src: url(../../font/Bookerly.ttf) format('opentype');
 }
-
 
 body {
   background-color: #000;
   color:aliceblue;
-  font-family: 'Effra';
+  font-family: 'Bookerly';
   font-size: 18px;
 }
 
@@ -22,7 +21,7 @@ input[type='file'] {
 a {
 	text-decoration: none;
 	color: aliceblue;
-  font-family: 'Effra';
+  font-family: 'Bookerly';
   font-size: 18px;
 }
 
@@ -92,6 +91,12 @@ form input {
   border-radius: 10px;
   resize: none;
   transition: all 0.3s ease-out !important;
+}
+
+.form-group a {
+  border: 1px solid #fff;
+  border-radius: 30px;
+  padding: 5px 10px;
 }
 
 .form-group textarea:focus {
