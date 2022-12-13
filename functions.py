@@ -88,7 +88,5 @@ def github_api(nickname: str):
 	img.close()
 
 
-
-
 if __name__ == '__main__':
 	pass

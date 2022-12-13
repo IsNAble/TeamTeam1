@@ -182,6 +182,8 @@ def profile(user, user_id, key):
 			data.user_last_name = 'No data'
 		if data.user_description == "":
 			data.user_description = 'No data'
+		if data.user_phone_number == "":
+			data.user_phone_number = 'No data'
 
 		return render_template('profile/profile.html', data=data, current_key=current_key)
 	else:
@@ -194,7 +196,11 @@ def edit_profile(user, user_id, key):
 		file = request.files['file']
 		first_name = request.form['first-name']
 		last_name = request.form['last-name']
+		nickname = request.form['nickname']
+		email = request.form['email']
 		description = request.form['textarea']
+		phone_number = request.form['phone-number']
+		github_link = request.form['github']
 		current_user = Users.query.get(user_id)
 		flag = True
 
@@ -204,8 +210,17 @@ def edit_profile(user, user_id, key):
 			first_name = current_user.user_first_name
 		if last_name == '':
 			last_name = current_user.user_last_name
+		if nickname == '':
+			nickname = current_user.user_nickname
+		if email == '':
+			email = current_user.user_email
 		if description == '':
 			description = current_user.user_description
+		if phone_number == '':
+			phone_number = current_user.user_phone_number
+		if github_link == '':
+			github_link = current_user.user_github_link
+
 
 		if check_extension(file.filename) is False and file.filename != '':
 			return 'Произошла ошибка, недопустимое расширение'
@@ -220,7 +235,11 @@ def edit_profile(user, user_id, key):
 
 		current_user.user_first_name = first_name
 		current_user.user_last_name = last_name
+		current_user.user_nickname = nickname
+		current_user.user_email = email
 		current_user.user_description = description
+		current_user.user_phone_number = phone_number
+		current_user.user_github_link = github_link
 
 		try:
 			db.session.commit()
@@ -258,7 +277,7 @@ def edit_profile(user, user_id, key):
 if __name__ == '__main__':
 	#github_api('ViLsonCake')
 	#github_api('IsNAble')
-	generate_admin_key('secret-key.txt')
-	generate_users_key('users-key.txt')
+	#generate_admin_key('secret-key.txt')
+	#generate_users_key('users-key.txt')
 
 	application.run(debug=True)
