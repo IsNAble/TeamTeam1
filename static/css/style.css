@@ -5,12 +5,12 @@
 
 body {
   background-color: #00110b;
-  color:aliceblue;
+  color:#fff;
   font-family: 'Bookerly';
 }
 
 .container {
-  max-width: 1140px ;
+  max-width: 1440px ;
   margin: 0 auto;
 }
 
@@ -28,7 +28,7 @@ ul {
 
 a {
 	text-decoration: none;
-	color: aliceblue;
+	color: #fff;
   font-family: 'Bookerly';
   font-size: 18px;
   transition: all 3s ease-in!important;
@@ -43,6 +43,14 @@ a:hover {
 
 .header{
   background-color: rgb(3, 11, 6);
+}
+
+.logo-nav {
+  display: flex;
+}
+
+.logo-nav h2 {
+  margin-right: 30px;
 }
 
 .nav {

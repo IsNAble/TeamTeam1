@@ -4,8 +4,8 @@
 }
 
 body {
-  background-color: #000;
-  color:aliceblue;
+  background-color: #00110b;
+  color:#fff;
   font-family: 'Bookerly';
   font-size: 18px;
 }
@@ -20,7 +20,7 @@ input[type='file'] {
 
 a {
 	text-decoration: none;
-	color: aliceblue;
+	color: #fff;
   font-family: 'Bookerly';
   font-size: 18px;
 }
@@ -66,8 +66,8 @@ header {
 }
 
 form input {
-  background-color: #fff;;
-  border-radius: 10px;
+  background-color: inherit;
+  border-radius: 3px;
 }
 
 .user-info input {
@@ -96,7 +96,13 @@ form input {
 .form-group a {
   border: 1px solid #fff;
   border-radius: 30px;
-  padding: 5px 10px;
+  padding: 6px 10px;
+  transition: all 0.3s ease-out !important;
+}
+
+.form-group a:hover {
+  background-color: #fff;
+  color: #000;
 }
 
 .form-group textarea:focus {
@@ -114,32 +120,30 @@ form input {
 }
 
 .button-submit {
-  background-color: aliceblue;
+  background-color: #fff;
   border-radius: 30px;
   cursor: pointer;
   padding: 5px 10px;
-  font-weight: 600;
   border-width: 0;
   transition: all 0.3s ease-out !important;
 }
 
 .button-submit:hover {
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .link-button {
-  background-color: aliceblue;
+  background-color: #fff;
   border-radius: 30px;
   cursor: pointer;
   padding: 5px 10px;
-  font-weight: 600;
   border-width: 0;
   color:#000;
-  transition: all 0.4s ease-out!important;
+  transition: all 0.3s ease-out!important;
 }
 
 .link-button:hover {
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .form-group {

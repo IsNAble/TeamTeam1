@@ -5,15 +5,15 @@
 
 
 body {
-  background-color: #000;
-  color:aliceblue;
+  background-color: #00110b;
+  color:#fff;
   font-family: 'Bookerly';
   font-size: 18px;
 }
 
 a {
 	text-decoration: none;
-	color: aliceblue;
+	color: #fff;
   font-family: 'Bookerly';
   font-size: 18px;
 }
@@ -52,18 +52,19 @@ header {
 }
 
 .link-button {
-  background-color: aliceblue;
+  background-color: #fff;
   border-radius: 30px;
   cursor: pointer;
   padding: 5px 10px;
-  font-weight: 600;
   border-width: 0;
   color:#000;
-  transition: all 0.4s ease-out!important;
+  transition: all 0.3s ease-out!important;
+  border: 1px solid #fff;
 }
 
 .link-button:hover {
-  background-color: #fff;
+  background-color: inherit;
+  color: #fff;
 }
 
 .user-info {
@@ -87,6 +88,12 @@ header {
 
 .group-info a {
   border: 1px solid #fff;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border-radius: 30px;
+  transition: all 0.3s ease-out !important;
+}
+
+.group-info a:hover {
+  background-color: #fff;
+  color: #000;
 }
