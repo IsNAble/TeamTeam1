@@ -22,6 +22,9 @@ class Users(db.Model):
 	user_last_name = db.Column(db.String(30), default="")
 	user_phone_number = db.Column(db.String(30), default="")
 	user_github_link = db.Column(db.String(50), default="") 
+	user_incoming_invitations = db.Column(db.Text, default="empty")
+	user_sent_invitations = db.Column(db.Text, default="empty")
+	user_friends_list = db.Column(db.Text, default="empty")
 	date = db.Column(db.DateTime, default=datetime.utcnow)
 
 	def __repr__(self):
