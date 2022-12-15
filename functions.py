@@ -1,12 +1,12 @@
-from random import sample
+from random import sample, randrange
 import requests
 import json
 import re
 
 
 def check_password(password: str) -> bool:
-	upper = False
-	lower = False
+	upper = False 		# Проверка верхнего регистра
+	lower = False 		# Проверка нижнего регистра
 
 	if len(password) > 8 and len(password) < 16:
 		for i in password:
@@ -18,14 +18,18 @@ def check_password(password: str) -> bool:
 	return upper and lower
 
 
-def check_extension(filename: str) -> bool:
-	extensions = ('jpg', 'jpeg', 'png')
+def check_extension(filename: str) -> bool: 	# Функция для проверки допустимых расширений у файла
+	extensions = ('jpg', 'jpeg', 'png')			#jpg jpeg png
 
 	if '.' in filename:
 		extension = filename.split('.')[-1].lower()
 		return extension in extensions	
 	else:
 		return False
+
+
+def generate_primary_key():
+	return str(randrange(1000, 10000))		# Генерация четырехзначного ключа 
 
 
 def generate_admin_key(filename: str, length=6) -> None:

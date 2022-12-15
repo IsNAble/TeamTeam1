@@ -30,7 +30,7 @@
           <div class="search-container">
             <form action="" method="post">
             <div class="search-bar">
-                <input type="search">
+                <input type="search" name="search-bar">
 
               </form>
             </div>
@@ -38,7 +38,7 @@
         </div>
         <nav class="nav">
           <img src="../../static/img/{{ data.user_avatar }}" alt="Icon">
-          <a href="/profile/{{ data.user_nickname }}/{{ data.user_id }}={{ current_key }}"> {{ data.user_nickname }}</a>
+          <a href="/profile/{{ data.user_nickname }}/{{ data.user_primary_key }}={{ current_key }}"> {{ data.user_nickname }}</a>
           <a href="/home">Sign out</a>
         </nav>
       </div>
