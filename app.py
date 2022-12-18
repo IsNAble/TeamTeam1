@@ -124,7 +124,7 @@ def sign_up():
 			)
 
 		try:
-			db.session.add(users)
+			db.session.add(users) 	# Добавление новых данных в SQL
 			db.session.commit()
 		except:
 			return 'error'	
@@ -138,7 +138,7 @@ def sign_up():
 			if table[i].user_nickname == this_user_nickname:
 				return redirect(f'/home/{table[i].user_nickname}/{table[i].user_primary_key}={current_key}') 
 
-	else:
+	elif request.method == 'GET':
 		result = ['', '', '']
 		return render_template('sign-up.html', result=result)
 
@@ -233,7 +233,7 @@ def edit_profile(user, primary_key, key):
 
 		for i in range(len(table)):		# Поиск текущего пользователя по его уникальному ключу
 			if table[i].user_primary_key == primary_key:
-				current_user = talbe[i]
+				current_user = table[i]
 				break
 		else:
 			return '404 NOT FOUND'

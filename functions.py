@@ -22,7 +22,7 @@ def check_extension(filename: str) -> bool: 	# Функция для прове�
 	extensions = ('jpg', 'jpeg', 'png')			#jpg jpeg png
 
 	if '.' in filename:
-		extension = filename.split('.')[-1].lower()
+		extension = filename.split('.')[-1].lower() 	# Получение текущего расширения (если оно существует)
 		return extension in extensions	
 	else:
 		return False
@@ -45,12 +45,12 @@ def generate_admin_key(filename: str, length=6) -> None:
 			upper_case = "QWERTYUIOPASDFGHJKLZXCVBNM"
 			numbers = "0123456789"
 			string = lower_case + upper_case + numbers
-			current_key = ''.join(sample(string, length))
+			current_key = ''.join(sample(string, length)) 	# Генерация нового ключа каждые 10 запусков сервера
 		else:
 			count += 1
 
 		with open(filename, 'w', encoding='utf-8') as file:
-			file.write(f'{current_key}\ncount: {count}')
+			file.write(f'{current_key}\ncount: {count}') 	# Запись нового ключа 
 
 	except FileNotFoundError:
 		return 'Файла не существует'
@@ -81,14 +81,14 @@ def github_api(nickname: str):
 
 	url = f'https://api.github.com/users/{nickname}'
 
-	response = requests.get(url)
+	response = requests.get(url) 	# Get запрос на пользователя
 
-	result = re.findall(r'avatar_url.*?,', response.text)[0]
+	result = re.findall(r'avatar_url.*?,', response.text)[0] 	# Парсинг url из запроса
 	photo_url = result[13:-2]
 
-	response_photo = requests.get(photo_url)
+	response_photo = requests.get(photo_url) 	# Get запрос по url картинки
 	img = open(f'static/img/{name_photo}', 'wb')
-	img.write(response_photo.content)
+	img.write(response_photo.content)			# Считывание и запись картинки
 	img.close()
 
 
