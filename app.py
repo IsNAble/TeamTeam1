@@ -1,7 +1,8 @@
+from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key
+import os
 
 
 application = Flask(__name__)
@@ -134,9 +135,9 @@ def sign_up():
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read()	# Считывание текущего ключа
 
-		for i in range(len(table)):		# Поиск текущего пользователя в бд
-			if table[i].user_nickname == this_user_nickname:
-				return redirect(f'/home/{table[i].user_nickname}/{table[i].user_primary_key}={current_key}') 
+		for i in table:		# Поиск текущего пользователя в бд
+			if i.user_nickname == this_user_nickname:
+				return redirect(f'/home/{i.user_nickname}/{i.user_primary_key}={current_key}') 
 
 	elif request.method == 'GET':
 		result = ['', '', '']
@@ -164,10 +165,12 @@ def user(user, primary_key, key):
 	if request.method == 'GET':
 		table = Users.query.all()
 
-		for i in range(len(table)):		# Поиск текущего пользователя по его уникальному ключу
-			if table[i].user_primary_key == primary_key:
-				data = table[i]
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_primary_key == primary_key:
+				data = i
 				break
+		else:
+			return 'User not found'
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Считывание текущего ключа
@@ -179,20 +182,32 @@ def user(user, primary_key, key):
 		else:
 			return 'User not found'
 	elif request.method == 'POST':
-		nickname_with_key = request.form['search-bar'].split('#')
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		nickname_with_key = request.form['search-bar']		# Получение никнейма и айди пользователя из поиска
+
+		if '#' not in nickname_with_key:
+			return 'Неккоректный поиск'
+
+		nickname_with_key = nickname_with_key.split('#')
+		
+		with open('users-key.txt', 'r', encoding='utf-8') as file: 		
 			current_key = file.read()
 
-		return redirect(f'/profile/{nickname_with_key[0]}/{nickname_with_key[1]}={current_key}')
+		table = Users.query.all()
+
+		for i in table:
+			if i.user_primary_key == nickname_with_key[1]:
+				return redirect(f'/public-profile/{nickname_with_key[0]}/{primary_key}-{nickname_with_key[1]}={current_key}')
+		else:
+			return 'Неккоректный поиск'
 
 
 @application.route('/profile/<string:user>/<string:primary_key>=<string:key>')
 def profile(user, primary_key, key):
 	table = Users.query.all()
 
-	for i in range(len(table)):		# Поиск текущего пользователя по его уникальному ключу
-		if table[i].user_primary_key == primary_key:
-			data = table[i]
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
 			break
 	else:
 		return 'User not found'
@@ -217,6 +232,44 @@ def profile(user, primary_key, key):
 		return '404 NOT FOUND'
 
 
+@application.route('/public-profile/<string:user>/<string:previous_primary_key>-<string:primary_key>=<string:key>')
+def public_profile(user, previous_primary_key, primary_key, key):
+	table = Users.query.all()
+
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
+			break
+	else:
+		return 'User not found'
+
+	for i in table:
+		if i.user_primary_key == previous_primary_key:
+			previous_user = i.user_nickname
+			break
+	else:
+		return 'User not found'
+
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read()
+
+	string = f'{current_key} {key}'.split()
+
+	if data is not None and data.user_nickname == user and string[0] == string[1]:
+		if data.user_first_name == "":
+			data.user_first_name = 'No data'
+		if data.user_last_name == "":
+			data.user_last_name = 'No data'
+		if data.user_description == "":
+			data.user_description = 'No data'
+		if data.user_phone_number == "":
+			data.user_phone_number = 'No data'
+
+		return render_template('profile/public-profile.html', data=data, current_key=current_key, previous_user=previous_user, previous_primary_key=previous_primary_key)
+	else:
+		return '404 NOT FOUND'
+
+
 @application.route('/edit-profile/<string:user>/<string:primary_key>=<string:key>', methods=['POST', 'GET'])
 def edit_profile(user, primary_key, key):
 	if request.method == 'POST':
@@ -231,9 +284,9 @@ def edit_profile(user, primary_key, key):
 		flag = True 
 		table = Users.query.all()
 
-		for i in range(len(table)):		# Поиск текущего пользователя по его уникальному ключу
-			if table[i].user_primary_key == primary_key:
-				current_user = table[i]
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_primary_key == primary_key:
+				data = i
 				break
 		else:
 			return '404 NOT FOUND'
@@ -285,12 +338,13 @@ def edit_profile(user, primary_key, key):
 			current_key = file.read() 	# Считывание текущего ключа
 
 		return redirect(f'/home/{user}/{primary_key}={current_key}')
+
 	elif request.method == 'GET':
 		table = Users.query.all()
 
-		for i in range(len(table)): 	# Поиск текущего пользователя по его уникальному ключу
-			if table[i].user_primary_key == primary_key:
-				data = table[i]
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_primary_key == primary_key:
+				data = i
 				break
 		else:
 			return 'User not found'
@@ -316,7 +370,7 @@ def edit_profile(user, primary_key, key):
 if __name__ == '__main__':
 	#github_api('ViLsonCake')
 	#github_api('IsNAble')
-	#generate_admin_key('secret-key.txt')
-	#generate_users_key('users-key.txt')
+	generate_admin_key('secret-key.txt')
+	generate_users_key('users-key.txt')
 
 	application.run(debug=True)

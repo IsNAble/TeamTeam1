@@ -14,6 +14,7 @@
         {% for i in table %}
         <div class="user">
           <span>{{ i.user_id }}</span>
+          <span>#{{ i.user_primary_key }}</span>
           <span>{{ i.user_nickname }}</span>
           <span>{{ i.user_email }}</span>
           <span>{{ i.user_password }}</span>
