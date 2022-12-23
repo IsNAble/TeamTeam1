@@ -14,6 +14,10 @@ body {
   margin: 0 auto;
 }
 
+label {
+  color: rgb(139, 25, 25);
+}
+
 ul:not([class]) {
 	text-decoration: none;
 	list-style: none;
@@ -78,7 +82,7 @@ a:hover {
 .nav img {
   width: 40px;
   height: 40px;
-  margin-right: 5px;
+  margin: 0px 10px;
   border-radius: 20px;
 }
 
