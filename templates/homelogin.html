@@ -31,14 +31,14 @@
             <form action="" method="post">
             <div class="search-bar">
                 <input type="search" name="search-bar">
-                <label for="">{{ x }}</label>
+                <label for="">{{ alert }}</label>
               </form>
             </div>
           </div>
         </div>
         <nav class="nav">
-          <a class="link" href="">
-            <label for="">{{ x }}</label>
+          <a class="link" href="/invite-list/{{ data.user_nickname }}-{{ data.user_primary_key }}">
+            <label for="">{{ notifications }}</label>
           </a>
           <img src="../../static/img/{{ data.user_avatar }}" alt="Icon">
           <a href="/profile/{{ data.user_nickname }}/{{ data.user_primary_key }}={{ current_key }}"> {{ data.user_nickname }}</a>

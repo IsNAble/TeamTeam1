@@ -65,9 +65,8 @@
             </dl>
             <div class="group-link">
               <a href="{{ data.user_github_link }}">Github</a>
-              <form action="" method="post">
-                <button type="submit">Send invite</button>
-              </form>
+                <!-- <button type="submit">Send invite</button> -->
+              <a href="/send-invite&{{ data.user_nickname }}-{{ data.user_primary_key }}&{{ previous_user }}-{{ previous_primary_key }}">Send invite</a>
             </div>
           </div>
         </div>

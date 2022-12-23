@@ -177,15 +177,33 @@ def user(user, primary_key, key):
 
 		string = f'{current_key} {key}'.split()
 
+		if data.user_incoming_invitations == 'empty':
+			notifications = ""
+		else:
+			notifications = '!'
+
 		if data is not None and data.user_nickname == user and string[0] == string[1]:
-			return render_template('homelogin.html', data=data, current_key=current_key)
+			return render_template('homelogin.html', data=data, current_key=current_key, notifications=notifications)
 		else:
 			return 'User not found'
 	elif request.method == 'POST':
 		nickname_with_key = request.form['search-bar']		# Получение никнейма и айди пользователя из поиска
 
+		table = Users.query.all()
+
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_primary_key == primary_key:
+				data = i
+				break
+		else:
+			return 'User not found'
+
 		if '#' not in nickname_with_key:
-			return 'Неккоректный поиск'
+			with open('users-key.txt', 'r', encoding='utf-8') as file:
+				current_key = file.read() 	# Считывание текущего ключа
+
+			alert = 'Неккоректный поиск'
+			return render_template('homelogin.html', data=data, current_key=current_key, alert=alert)
 
 		nickname_with_key = nickname_with_key.split('#')
 		
@@ -198,7 +216,8 @@ def user(user, primary_key, key):
 			if i.user_primary_key == nickname_with_key[1]:
 				return redirect(f'/public-profile/{nickname_with_key[0]}/{primary_key}-{nickname_with_key[1]}={current_key}')
 		else:
-			return 'Неккоректный поиск'
+			alert = 'Такого пользователя не существует'
+			return render_template('homelogin.html', data=data, current_key=current_key, alert=alert)
 
 
 @application.route('/profile/<string:user>/<string:primary_key>=<string:key>')
@@ -232,42 +251,61 @@ def profile(user, primary_key, key):
 		return '404 NOT FOUND'
 
 
-@application.route('/public-profile/<string:user>/<string:previous_primary_key>-<string:primary_key>=<string:key>')
+@application.route('/public-profile/<string:user>/<string:previous_primary_key>-<string:primary_key>=<string:key>', methods=['POST', 'GET'])
 def public_profile(user, previous_primary_key, primary_key, key):
-	table = Users.query.all()
+	if request.method == 'GET':
+		table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_primary_key == primary_key:
+				data = i
+				break
+		else:
+			return 'User not found'
 
-	for i in table:
-		if i.user_primary_key == previous_primary_key:
-			previous_user = i.user_nickname
-			break
-	else:
-		return 'User not found'
+		for i in table:
+			if i.user_primary_key == previous_primary_key:
+				previous_user = i.user_nickname
+				break
+		else:
+			return 'User not found'
 
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read()
+		with open('users-key.txt', 'r', encoding='utf-8') as file:
+			current_key = file.read()
 
-	string = f'{current_key} {key}'.split()
+		string = f'{current_key} {key}'.split()
 
-	if data is not None and data.user_nickname == user and string[0] == string[1]:
-		if data.user_first_name == "":
-			data.user_first_name = 'No data'
-		if data.user_last_name == "":
-			data.user_last_name = 'No data'
-		if data.user_description == "":
-			data.user_description = 'No data'
-		if data.user_phone_number == "":
-			data.user_phone_number = 'No data'
+		if data is not None and data.user_nickname == user and string[0] == string[1]:
+			if data.user_first_name == "":
+				data.user_first_name = 'No data'
+			if data.user_last_name == "":
+				data.user_last_name = 'No data'
+			if data.user_description == "":
+				data.user_description = 'No data'
+			if data.user_phone_number == "":
+				data.user_phone_number = 'No data'
 
-		return render_template('profile/public-profile.html', data=data, current_key=current_key, previous_user=previous_user, previous_primary_key=previous_primary_key)
-	else:
-		return '404 NOT FOUND'
+			return render_template('profile/public-profile.html', data=data, current_key=current_key, previous_user=previous_user, previous_primary_key=previous_primary_key)
+		else:
+			return '404 NOT FOUND'
+	elif request.method == 'POST':
+		table = Users.query.all()
+
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_primary_key == primary_key:
+				data = i
+				break
+		else:
+			return 'User not found'
+
+		data.user_incoming_invitations = f'{user}#{previous_primary_key}'
+
+		try:
+			db.session.commit()
+		except:
+			return 'error'
+
+		return redirect(f'public-profile/{user}/{previous_primary_key}-{primary_key}={key}')
 
 
 @application.route('/edit-profile/<string:user>/<string:primary_key>=<string:key>', methods=['POST', 'GET'])
@@ -372,12 +410,65 @@ def friend_list(primary_key, key):
 	return render_template('friends-page.html', table=table)
 
 
+@application.route('/send-invite&<string:user>-<string:primary_key>&<string:previous_user>-<string:previous_primary_key>')
+def send_invite(user, primary_key, previous_user, previous_primary_key):
+	table = Users.query.all()
+
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
+			break
+	else:
+		return 'User not found'
+
+	for i in table:		# Поиск предыдущего пользователя по его уникальному ключу
+		if i.user_primary_key == previous_primary_key:
+			previous_data = i
+			break
+	else:
+		return 'User not found'
+
+	if data.user_incoming_invitations == 'empty':
+		data.user_incoming_invitations = f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
+	elif f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}' not in data.user_incoming_invitations:
+		data.user_incoming_invitations += f' {previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
+
+	try:
+		db.session.commit()
+	except:
+		return 'error'
+
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read()
+
+	return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
+
+
+@application.route('/invite-list/<string:user>-<string:primary_key>')
+def invite_list(user, primary_key):
+	table = Users.query.all()
+
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
+			break
+	else:
+		return 'User not found'
+
+	invites_list = data.user_incoming_invitations.split()
+
+	for i in range(len(invites_list)):
+		invites_list[i] = invites_list[i].split('#')
+
+	return render_template('invite-list.html', invites_list=invites_list)
+
+
 
 
 if __name__ == '__main__':
 	#github_api('ViLsonCake')
 	#github_api('IsNAble')
-	generate_admin_key('secret-key.txt')
-	generate_users_key('users-key.txt')
+	#generate_admin_key('secret-key.txt')
+	#generate_users_key('users-key.txt')
 
 	application.run(debug=True)
