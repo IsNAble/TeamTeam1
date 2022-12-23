@@ -365,6 +365,13 @@ def edit_profile(user, primary_key, key):
 			return render_template('profile/profilesetting.html', data=data, current_key=current_key)
 
 
+@application.route('/user-friend-list=<string:primary_key>&<string:key>')
+def friend_list(primary_key, key):
+	table = Users.query.all()
+
+	return render_template('friends-page.html', table=table)
+
+
 
 
 if __name__ == '__main__':
