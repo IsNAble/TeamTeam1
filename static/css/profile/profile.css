@@ -93,6 +93,10 @@ header {
   transition: all 0.3s ease-out !important;
 }
 
+.group-info a:not(:last-child) {
+  margin-right: 90px;
+}
+
 .group-info a:hover {
   background-color: #fff;
   color: #000;
