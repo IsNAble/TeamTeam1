@@ -63,9 +63,12 @@
                 <textarea name="" id="" cols="30" rows="1" disabled="disabled">{{ data.user_phone_number }}</textarea>
               </dd>
             </dl>
-            <dl class="group-info">
+            <div class="group-link">
               <a href="{{ data.user_github_link }}">Github</a>
-            </dl>
+              <form action="" method="post">
+                <button type="submit">Send invite</button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
