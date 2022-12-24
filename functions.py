@@ -28,6 +28,15 @@ def check_extension(filename: str) -> bool: 	# Функция для прове�
 		return False
 
 
+def check_key(key: str, filename='users-key.txt') -> bool:
+	with open(filename, 'r', encoding='utf-8') as file:
+		current_key = file.read()
+
+	string = f'{key} {current_key}'.split()
+
+	return string[0] == string[1]
+
+
 def generate_primary_key():
 	return str(randrange(1000, 10000))		# Генерация четырехзначного ключа 
 

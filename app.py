@@ -1,4 +1,4 @@
-from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key
+from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -254,6 +254,9 @@ def profile(user, primary_key, key):
 @application.route('/public-profile/<string:user>/<string:previous_primary_key>-<string:primary_key>=<string:key>', methods=['POST', 'GET'])
 def public_profile(user, previous_primary_key, primary_key, key):
 	if request.method == 'GET':
+		if check_key(key) is not True:
+			return '404 NOT FOUND'
+
 		table = Users.query.all()
 
 		for i in table:		# Поиск текущего пользователя по его уникальному ключу
@@ -378,6 +381,9 @@ def edit_profile(user, primary_key, key):
 		return redirect(f'/home/{user}/{primary_key}={current_key}')
 
 	elif request.method == 'GET':
+		if check_key(key) is not True:
+			return '404 NOT FOUND'
+
 		table = Users.query.all()
 
 		for i in table:		# Поиск текущего пользователя по его уникальному ключу
@@ -405,9 +411,17 @@ def edit_profile(user, primary_key, key):
 
 @application.route('/user-friend-list=<string:primary_key>&<string:key>')
 def friend_list(primary_key, key):
-	table = Users.query.all()
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read() 	# Считывание текущего ключа
 
-	return render_template('friends-page.html', table=table)
+	string = f'{current_key} {key}'.split()
+
+	if string[0] == string[1]:
+		table = Users.query.all()
+
+		return render_template('friends-page.html', table=table)
+	else:
+		return '404 NOT FOUND'
 
 
 @application.route('/send-invite&<string:user>-<string:primary_key>&<string:previous_user>-<string:previous_primary_key>')
@@ -444,8 +458,30 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 	return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
 
 
-@application.route('/invite-list/<string:user>-<string:primary_key>')
-def invite_list(user, primary_key):
+@application.route('/invite-list/<string:user>-<string:primary_key>=<string:key>')
+def invite_list(user, primary_key, key):
+	if check_key(key) is not True:
+		return '404 NOT FOUND'
+
+	table = Users.query.all()
+
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
+			break
+	else:
+		return 'User not found'
+
+	invites_list = data.user_incoming_invitations.split() 	# split на каждое приглашение отдельно
+
+	for i in range(len(invites_list)):
+		invites_list[i] = invites_list[i].split('#') 
+
+	return render_template('invite-list.html', invites_list=invites_list, primary_key=primary_key)
+
+
+@application.route('/accept/<string:user>#<string:key>-<string:primary_key>')
+def accept(user, key, primary_key):
 	table = Users.query.all()
 
 	for i in table:		# Поиск текущего пользователя по его уникальному ключу
@@ -458,9 +494,28 @@ def invite_list(user, primary_key):
 	invites_list = data.user_incoming_invitations.split()
 
 	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#')
+		invites_list[i] = invites_list[i].split('#') 
+		if invites_list[i][-1] == key:
+			invites_list[i] == ''
 
-	return render_template('invite-list.html', invites_list=invites_list)
+	invites_list = " ".join(invites_list)
+
+	#if data.user_friends_list == 'empty':
+	#	data.user_friends_list = f'{avatar}#{user}#{key}'
+	#	data.user_incoming_invitations = invites_list
+	#else:
+	#	data.user_friends_list += f' {avatar}#{user}#{key}'
+	#	data.user_incoming_invitations = invites_list
+#
+	#try:
+	#	db.session.commit()
+	#except:
+	#	return 'error'
+
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read() 	# Считывание текущего ключа
+
+	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
 
 
 
