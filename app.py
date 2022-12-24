@@ -482,6 +482,7 @@ def invite_list(user, primary_key, key):
 
 @application.route('/accept/<string:user>#<string:key>-<string:primary_key>')
 def accept(user, key, primary_key):
+	return redirect('/home')
 	table = Users.query.all()
 
 	for i in table:		# Поиск текущего пользователя по его уникальному ключу
