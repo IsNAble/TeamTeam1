@@ -177,7 +177,7 @@ def user(user, primary_key, key):
 
 		string = f'{current_key} {key}'.split()
 
-		if data.user_incoming_invitations == 'empty':
+		if data.user_incoming_invitations in ('empty', ''):
 			notifications = ""
 		else:
 			notifications = '!'
@@ -480,9 +480,8 @@ def invite_list(user, primary_key, key):
 	return render_template('invite-list.html', invites_list=invites_list, primary_key=primary_key)
 
 
-@application.route('/accept/<string:user>#<string:key>-<string:primary_key>')
-def accept(user, key, primary_key):
-	return redirect('/home')
+@application.route('/accept/<string:avatar>&<string:user>&<string:key>=<string:primary_key>')
+def accept(avatar, user, key, primary_key):
 	table = Users.query.all()
 
 	for i in table:		# Поиск текущего пользователя по его уникальному ключу
@@ -493,25 +492,30 @@ def accept(user, key, primary_key):
 		return 'User not found'
 
 	invites_list = data.user_incoming_invitations.split()
+	invites_copy = invites_list.copy()
 
 	for i in range(len(invites_list)):
 		invites_list[i] = invites_list[i].split('#') 
 		if invites_list[i][-1] == key:
-			invites_list[i] == ''
+			invites_list[i] = ''
+		invites_list[i] = '#'.join(invites_list[i])
 
 	invites_list = " ".join(invites_list)
 
-	#if data.user_friends_list == 'empty':
-	#	data.user_friends_list = f'{avatar}#{user}#{key}'
-	#	data.user_incoming_invitations = invites_list
-	#else:
-	#	data.user_friends_list += f' {avatar}#{user}#{key}'
-	#	data.user_incoming_invitations = invites_list
-#
-	#try:
-	#	db.session.commit()
-	#except:
-	#	return 'error'
+	if data.user_friends_list == 'empty': 	# default значение
+		data.user_friends_list = f'{avatar}#{user}#{key}'
+		data.user_incoming_invitations = invites_list
+	elif f'{avatar}#{user}#{key}' not in data.user_friends_list:
+		data.user_friends_list += f' {avatar}#{user}#{key}'
+		data.user_incoming_invitations = invites_list
+
+	#if data.user_incoming_invitations == '':
+	#	data.user_incoming_invitations = 'empty'
+
+	try:
+		db.session.commit()
+	except:
+		return 'error'
 
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Считывание текущего ключа

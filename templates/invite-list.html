@@ -19,8 +19,8 @@
           </div>
           <span>{{ i[1] }}#{{ i[2] }}</span>
           <div class="buttons">
-            <a class="button" href="/accept/{{ i[1] }}#{{ i[2] }}-{{ primary_key }}">Accept</a>
-            <a class="button" href="/decline/{{ i[1] }}#{{ i[2] }}-{{ primary_key }}">Decline</a>
+            <a class="button" href="/accept/{{ i[0] }}&{{ i[1] }}&{{ i[2] }}={{ primary_key }}">Accept</a>
+            <a class="button" href="/decline/{{ i[0] }}&{{ i[1] }}&{{ i[2] }}={{ primary_key }}">Decline</a>
           </div>      
         </div>
         {% endfor %}
