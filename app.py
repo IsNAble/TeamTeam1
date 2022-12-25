@@ -254,9 +254,6 @@ def profile(user, primary_key, key):
 @application.route('/public-profile/<string:user>/<string:previous_primary_key>-<string:primary_key>=<string:key>', methods=['POST', 'GET'])
 def public_profile(user, previous_primary_key, primary_key, key):
 	if request.method == 'GET':
-		if check_key(key) is not True:
-			return '404 NOT FOUND'
-
 		table = Users.query.all()
 
 		for i in table:		# Поиск текущего пользователя по его уникальному ключу
@@ -433,7 +430,7 @@ def friend_list(primary_key, key):
 	for i in range(len(friends_list)):
 		friends_list[i] = friends_list[i].split('#') 
 
-	return render_template('friends-page.html', data=data, friends_list=friends_list)
+	return render_template('friends-page.html', data=data, friends_list=friends_list, current_key=current_key)
 
 
 @application.route('/send-invite&<string:user>-<string:primary_key>&<string:previous_user>-<string:previous_primary_key>')
@@ -475,7 +472,8 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 
 @application.route('/invite-list/<string:user>-<string:primary_key>=<string:key>')
 def invite_list(user, primary_key, key):
-	if check_key(key) is not True:
+	current_key = check_key(key)
+	if current_key[0] is not True:
 		return '404 NOT FOUND'
 
 	table = Users.query.all()
@@ -492,7 +490,7 @@ def invite_list(user, primary_key, key):
 	for i in range(len(invites_list)):
 		invites_list[i] = invites_list[i].split('#') 
 
-	return render_template('invite-list.html', invites_list=invites_list, primary_key=primary_key)
+	return render_template('invite-list.html', data=data, invites_list=invites_list, primary_key=primary_key, current_key=current_key[1])
 
 
 @application.route('/accept/<string:avatar>&<string:user>&<string:key>=<string:primary_key>')

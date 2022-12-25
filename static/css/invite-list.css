@@ -9,10 +9,15 @@ body {
   font-family: 'Bookerly';
 }
 
-a[class]{
+a {
 	text-decoration: none;
-  color:#fff;
+	color: #fff;
   font-family: 'Bookerly';
+  font-size: 18px;
+}
+
+header {
+  padding: 20px;
 }
 
 .container {
@@ -38,12 +43,14 @@ a[class]{
 .user img {
   width: 50px;
   height: 50px;
+  border-radius: 30px;
 }
 
 .user-list {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 30px;
 }
 
 .buttons {
@@ -57,4 +64,26 @@ a[class]{
   padding: 5px 9px;
   border-radius: 30px;
   margin: 10px 0px;
+  transition: all 0.3s ease-out !important ;
+}
+
+.buttons a:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+.link-button {
+  background-color: #fff;
+  border-radius: 30px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-width: 0;
+  color:#000;
+  transition: all 0.3s ease-out!important;
+  border: 1px solid #fff;
+}
+
+.link-button:hover {
+  background-color: inherit;
+  color: #fff;
 }

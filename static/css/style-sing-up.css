@@ -29,8 +29,6 @@ a[class]{
   align-items: center;
 }
 
-
-
 .button button {
   background-color: #fff;
   border-radius: 30px;
@@ -50,7 +48,8 @@ a[class]{
 }
 
 .button button:hover {
-  background-color: #fff;
+  background-color: inherit;
+  color: #fff;
 }
 
 .button a {
@@ -66,7 +65,8 @@ a[class]{
 }
 
 .button a:hover {
-  background-color: #fff;
+  background-color: inherit;
+  color: #fff;
 }
 
 .sign-up {

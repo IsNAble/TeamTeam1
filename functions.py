@@ -34,7 +34,7 @@ def check_key(key: str, filename='users-key.txt') -> bool:
 
 	string = f'{key} {current_key}'.split()
 
-	return string[0] == string[1]
+	return string[0] == string[1], current_key
 
 
 def generate_primary_key():
