@@ -327,7 +327,7 @@ def edit_profile(user, primary_key, key):
 
 		for i in table:		# Поиск текущего пользователя по его уникальному ключу
 			if i.user_primary_key == primary_key:
-				data = i
+				current_user = i
 				break
 		else:
 			return '404 NOT FOUND'
@@ -409,23 +409,41 @@ def edit_profile(user, primary_key, key):
 			return render_template('profile/profilesetting.html', data=data, current_key=current_key)
 
 
-@application.route('/user-friend-list=<string:primary_key>&<string:key>')
+@application.route('/user-friends-list=<string:primary_key>&<string:key>')
 def friend_list(primary_key, key):
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Считывание текущего ключа
 
 	string = f'{current_key} {key}'.split()
 
-	if string[0] == string[1]:
-		table = Users.query.all()
-
-		return render_template('friends-page.html', table=table)
-	else:
+	if string[0] != string[1]:
 		return '404 NOT FOUND'
+
+	table = Users.query.all()
+
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
+			break
+	else:
+		return 'User not found'
+
+	friends_list = data.user_friends_list.split()
+
+	for i in range(len(friends_list)):
+		friends_list[i] = friends_list[i].split('#') 
+
+	return render_template('friends-page.html', data=data, friends_list=friends_list)
 
 
 @application.route('/send-invite&<string:user>-<string:primary_key>&<string:previous_user>-<string:previous_primary_key>')
 def send_invite(user, primary_key, previous_user, previous_primary_key):
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read()
+
+	if primary_key == previous_primary_key:
+		return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
+
 	table = Users.query.all()
 
 	for i in table:		# Поиск текущего пользователя по его уникальному ключу
@@ -451,9 +469,6 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 		db.session.commit()
 	except:
 		return 'error'
-
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read()
 
 	return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
 
@@ -492,7 +507,6 @@ def accept(avatar, user, key, primary_key):
 		return 'User not found'
 
 	invites_list = data.user_incoming_invitations.split()
-	invites_copy = invites_list.copy()
 
 	for i in range(len(invites_list)):
 		invites_list[i] = invites_list[i].split('#') 
@@ -509,8 +523,39 @@ def accept(avatar, user, key, primary_key):
 		data.user_friends_list += f' {avatar}#{user}#{key}'
 		data.user_incoming_invitations = invites_list
 
-	#if data.user_incoming_invitations == '':
-	#	data.user_incoming_invitations = 'empty'
+	try:
+		db.session.commit()
+	except:
+		return 'error'
+
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read() 	# Считывание текущего ключа
+
+	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
+
+
+@application.route('/decline/<string:avatar>&<string:user>&<string:key>=<string:primary_key>')
+def decline(avatar, user, key, primary_key):
+	table = Users.query.all()
+
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
+			break
+	else:
+		return 'User not found'
+
+	invites_list = data.user_incoming_invitations.split()
+
+	for i in range(len(invites_list)):
+		invites_list[i] = invites_list[i].split('#') 
+		if invites_list[i][-1] == key:
+			invites_list[i] = ''
+		invites_list[i] = '#'.join(invites_list[i])
+
+	invites_list = " ".join(invites_list)
+
+	data.user_incoming_invitations = invites_list
 
 	try:
 		db.session.commit()

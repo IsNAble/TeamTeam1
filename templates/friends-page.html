@@ -9,15 +9,22 @@
   <title>Document</title>
 </head>
 <body>
+  <header class="header">
+    <div class="container">
+      <div class="button-back">
+        <a class="link-button" href="/home/{{ data.user_nickname }}/{{ data.user_primary_key }}={{ current_key }}">Go back</a>
+      </div>
+    </div>
+  </header>
   <section class="section">
     <div class="container">
       <div class="user-list">
-        {% for i in table %}
+        {% for i in friends_list %}
         <div class="user">
           <div class="user-photo">
-            <img src="../static/img/Circle_Davys-Grey_Solid.svg.png" alt="">
+            <img src="../static/img/{{ i[0] }}" alt="">
           </div>
-          <span>{{ i.user_nickname }}#{{ i.user_primary_key }}</span>      
+          <span>{{ i[1] }}#{{ i[2] }}</span>      
         </div>
         {% endfor %}
       </div>
