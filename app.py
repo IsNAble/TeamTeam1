@@ -370,6 +370,11 @@ def edit_profile(user, primary_key, key):
 			return 'Произошла ошибка'
 
 		if flag:
+			list_image = os.listdir('static/img') 	# Список файлов в папке img
+			for img in list_image:
+				if user + str(current_user.user_id) in img: 	# Если это предыдущий файл пользователя
+					os.remove(f'static/img/{img}') 				# то его удаляем
+
 			file.save(user_avatar_path)		# Сохранение картинки 
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
@@ -378,9 +383,6 @@ def edit_profile(user, primary_key, key):
 		return redirect(f'/home/{user}/{primary_key}={current_key}')
 
 	elif request.method == 'GET':
-		if check_key(key) is not True:
-			return '404 NOT FOUND'
-
 		table = Users.query.all()
 
 		for i in table:		# Поиск текущего пользователя по его уникальному ключу
@@ -405,6 +407,8 @@ def edit_profile(user, primary_key, key):
 
 			return render_template('profile/profilesetting.html', data=data, current_key=current_key)
 
+		return '404 NOT FOUND'
+
 
 @application.route('/user-friends-list=<string:primary_key>&<string:key>')
 def friend_list(primary_key, key):
@@ -425,10 +429,10 @@ def friend_list(primary_key, key):
 	else:
 		return 'User not found'
 
-	friends_list = data.user_friends_list.split()
+	friends_list = data.user_friends_list.split() 	# Получение данных о друзьях пользователя
 
 	for i in range(len(friends_list)):
-		friends_list[i] = friends_list[i].split('#') 
+		friends_list[i] = friends_list[i].split('#') 	# Разделение каждого друга на кортеж (аватар, никнейм, ключ)
 
 	return render_template('friends-page.html', data=data, friends_list=friends_list, current_key=current_key)
 
@@ -438,7 +442,7 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read()
 
-	if primary_key == previous_primary_key:
+	if primary_key == previous_primary_key: 	# Условия при котором пользователь отправляет запрос самому себе
 		return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
 
 	table = Users.query.all()
@@ -457,7 +461,7 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 	else:
 		return 'User not found'
 
-	if data.user_incoming_invitations == 'empty':
+	if data.user_incoming_invitations == 'empty': 	# Запись данных про запросы в друзья
 		data.user_incoming_invitations = f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
 	elif f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}' not in data.user_incoming_invitations:
 		data.user_incoming_invitations += f' {previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
@@ -488,7 +492,7 @@ def invite_list(user, primary_key, key):
 	invites_list = data.user_incoming_invitations.split() 	# split на каждое приглашение отдельно
 
 	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 
+		invites_list[i] = invites_list[i].split('#') 	# Разбитие элементов на кортеж (аватар, никнейм, ключ)
 
 	return render_template('invite-list.html', data=data, invites_list=invites_list, primary_key=primary_key, current_key=current_key[1])
 
@@ -504,18 +508,18 @@ def accept(avatar, user, key, primary_key):
 	else:
 		return 'User not found'
 
-	invites_list = data.user_incoming_invitations.split()
+	invites_list = data.user_incoming_invitations.split() 	# Разбитие на каждый инвайт
 
 	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 
-		if invites_list[i][-1] == key:
+		invites_list[i] = invites_list[i].split('#') 	# Разбитие элементов на кортеж (аватар, никнейм, ключ)
+		if invites_list[i][-1] == key:		# Если это пользователь, инвайт которого мы принимаем, убрать его
 			invites_list[i] = ''
-		invites_list[i] = '#'.join(invites_list[i])
+		invites_list[i] = '#'.join(invites_list[i]) 	# Соединить элемент обратно по символу #
 
-	invites_list = " ".join(invites_list)
+	invites_list = " ".join(invites_list) 	 # Соединить все запросы
 
 	if data.user_friends_list == 'empty': 	# default значение
-		data.user_friends_list = f'{avatar}#{user}#{key}'
+		data.user_friends_list = f'{avatar}#{user}#{key}' 	# Добавление в друзья и удаление инвайта после этого
 		data.user_incoming_invitations = invites_list
 	elif f'{avatar}#{user}#{key}' not in data.user_friends_list:
 		data.user_friends_list += f' {avatar}#{user}#{key}'
@@ -543,17 +547,17 @@ def decline(avatar, user, key, primary_key):
 	else:
 		return 'User not found'
 
-	invites_list = data.user_incoming_invitations.split()
+	invites_list = data.user_incoming_invitations.split() 	# Разбитие на каждый инвайт
 
 	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 
-		if invites_list[i][-1] == key:
+		invites_list[i] = invites_list[i].split('#') 	# Разбитие элементов на кортеж (аватар, никнейм, ключ)
+		if invites_list[i][-1] == key: 		# Если это пользователь, инвайт которого мы принимаем, убрать его
 			invites_list[i] = ''
-		invites_list[i] = '#'.join(invites_list[i])
+		invites_list[i] = '#'.join(invites_list[i]) 	# Соединить элемент обратно по символу #
 
-	invites_list = " ".join(invites_list)
+	invites_list = " ".join(invites_list) 	 # Соединить все запросы
 
-	data.user_incoming_invitations = invites_list
+	data.user_incoming_invitations = invites_list 		# Перезапись списка инвайтов
 
 	try:
 		db.session.commit()
