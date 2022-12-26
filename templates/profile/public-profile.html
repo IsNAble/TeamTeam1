@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../../static/css/reset.css">
   <link rel="stylesheet" href="../../static/css/profile/profile.css">
+  <link rel="icon" type="image/png" href="../../static/img/favicon-32x32.png" sizes="32x32"/>
+  <link rel="icon" type="image/png" href="../../static/img/favicon-16x16.png" sizes="16x16"/>
+  <link rel="stylesheet" href="../../static/img/favicon.ico">
   <title>Profile</title>
 </head>
 <body>
@@ -29,7 +32,7 @@
         <div class="info">
           <div class="subhead">
             <h2>Info</h2>
-          </div>
+          </div class="info-column">
           <div>
             <dl class="group-info">
               <dt>
@@ -65,8 +68,10 @@
             </dl>
             <div class="group-link">
               <a href="{{ data.user_github_link }}">Github</a>
-                <!-- <button type="submit">Send invite</button> -->
               <a href="/send-invite&{{ data.user_nickname }}-{{ data.user_primary_key }}&{{ previous_user }}-{{ previous_primary_key }}">Send invite</a>
+            </div>
+            <div class="label-info">
+              <label for="">Invite sent</label>
             </div>
           </div>
         </div>

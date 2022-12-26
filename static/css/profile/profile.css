@@ -36,10 +36,6 @@ header {
 
 }
 
-.info {
-  width: 700px;
-}
-
 .user-info img {
   width: 256px;
   height: 256px;
@@ -102,9 +98,10 @@ header {
 }
 
 .group-link {
-  margin: 40px 0px;
+  margin: 40px 0px 0px 0px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .group-link button {
@@ -121,10 +118,20 @@ header {
   padding: 6px 10px;
   border-radius: 30px;
   transition: all 0.3s ease-out !important;
+}
+
+.group-link a:not(:last-child) {
   margin-right: 98px;
 }
 
 .group-link a:hover {
   background-color: #fff;
   color: #000;
+}
+
+.label-info {
+  display: flex;
+  justify-content: right;
+  padding-right: 13px;
+  padding-top: 5px;
 }

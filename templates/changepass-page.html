@@ -5,29 +5,27 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../static/css/reset.css">
-  <link rel="stylesheet" href="../static/css/style-sing-up.css">
+  <link rel="stylesheet" href="../static/css/changepass-page.css">
   <link rel="icon" type="image/png" href="../static/img/favicon-32x32.png" sizes="32x32"/>
   <link rel="icon" type="image/png" href="../static/img/favicon-16x16.png" sizes="16x16"/>
   <link rel="stylesheet" href="../static/img/favicon.ico">
-  <title>Sign-Up</title>
+  <title>Change password</title>
 </head>
 <body>
   <section class="section">
     <div class="container">
       <div class="wrapper">
         <div class="sign-up">
-          <h1>Sign-Up</h1>
+          <h1>Change password</h1>
           <form method="post">
-            <input type="text" name="nickname" id="nickname" placeholder="Enter nickname">
-            <label>{{ result[0] }}</label>
-            <input type="email" name="email" id="email" placeholder="Enter your email">
+            <input type="password" name="password" id="pass" placeholder="Enter old password">
             <label>{{ result[1] }}</label>
             <input type="password" name="password" id="pass" placeholder="Enter new password">
             <label>{{ result[2] }}</label>
             <input type="password" name="repeatpassword" id="pass" placeholder="Repeat password">
             <div class="button">
               <a href="/home">Back</a>
-              <button class="success" type="submit">Sign-Up</button>
+              <button class="success" type="submit">Change</button>
               </div>
           </form>
         </div>
