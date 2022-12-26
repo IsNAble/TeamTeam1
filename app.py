@@ -411,9 +411,52 @@ def edit_profile(user, primary_key, key):
 		return '404 NOT FOUND'
 
 
-@application.route('/change-password/<string:user>/<string:primary_key>=<string:key>')
+@application.route('/change-password/<string:user>/<string:primary_key>=<string:key>', methods=['POST', 'GET'])
 def change_password(user, primary_key, key):
-	pass
+	if request.method == 'POST':
+		table = Users.query.all()
+
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_primary_key == primary_key:
+				data = i
+				break
+		else:
+			return '404 NOT FOUND'
+
+		old_password = request.form['old-password']
+		password = request.form['password']
+		repeatpassword = request.form['repeatpassword']
+
+		if old_password == "" or password == "" or repeatpassword == "":
+			alert_up = 'Поле не может быть пустым'
+			return render_template('changepass.html', alert_up=alert_up, user=user, primary_key=primary_key, key=key)
+
+		if old_password.strip() != data.user_password:
+			alert_up = 'Вы ввели неправильный пароль'
+			return render_template('changepass-page.html', alert_up=alert_up, user=user, primary_key=primary_key, key=key)
+
+		if password.strip() != repeatpassword.strip():
+			alert_down = 'Пароли не совпадают'
+			return render_template('changepass-page.html', alert_down=alert_down, user=user, primary_key=primary_key, key=key)
+
+		if password.strip() == data.user_password:
+			alert_down = 'Новый пароль не должен равняться старому'
+			return render_template('changepass-page.html', alert_down=alert_down, user=user, primary_key=primary_key, key=key)
+
+		data.user_password = password
+		data.user_repeat_password = password
+
+		try:
+			db.session.commit()
+		except:
+			return 'error'
+
+		with open('users-key.txt', 'r', encoding='utf-8') as file:
+			current_key = file.read()
+
+		return redirect(f'/edit-profile/{data.user_nickname}/{data.user_primary_key}={current_key}')
+	elif request.method == 'GET':
+		return render_template('changepass-page.html', user=user, primary_key=primary_key, key=key)
 
 
 @application.route('/user-friends-list=<string:primary_key>&<string:key>')
