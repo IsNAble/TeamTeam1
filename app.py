@@ -1,4 +1,5 @@
 from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key
+from send_email import send_email
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -408,6 +409,11 @@ def edit_profile(user, primary_key, key):
 			return render_template('profile/profilesetting.html', data=data, current_key=current_key)
 
 		return '404 NOT FOUND'
+
+
+@application.route('/change-password/<string:user>/<string:primary_key>=<string:key>')
+def change_password(user, primary_key, key):
+	pass
 
 
 @application.route('/user-friends-list=<string:primary_key>&<string:key>')

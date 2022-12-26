@@ -2,3 +2,4 @@
 /__pycache__
 secret-key.txt
 users-key.txt
+email-password.txt
