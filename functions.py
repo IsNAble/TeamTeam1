@@ -99,7 +99,3 @@ def github_api(nickname: str):
 	img = open(f'static/img/{name_photo}', 'wb')
 	img.write(response_photo.content)			# Считывание и запись картинки
 	img.close()
-
-
-if __name__ == '__main__':
-	pass
