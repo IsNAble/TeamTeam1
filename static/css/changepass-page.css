@@ -106,3 +106,13 @@ form input:focus {
   font-family: "Bookerly";
   color: rgba(193, 23, 23, 0.76);
 }
+
+.forgotpass-link a {
+  color: #fff;
+}
+
+.forgotpass-link {
+  width: 100%;
+  display: flex;
+  padding: 0px 0px 5px 0px;
+}

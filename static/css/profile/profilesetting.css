@@ -77,7 +77,7 @@ form input {
 }
 
 .info {
-  width: 700px;
+
 }
 
 .subhead {
@@ -155,4 +155,9 @@ form input {
   background: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.item-group div {
+  display: flex;
+  justify-content: space-between;
 }

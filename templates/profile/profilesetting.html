@@ -34,7 +34,7 @@
           <div class="subhead">
             <h2>Profile</h2>
           </div>
-            <div>
+            <div class="item-group">
               <dl class="form-group">
                 <dt>
                   <label for="#">First name</label>
@@ -91,10 +91,10 @@
                   <textarea type="text" class="textarea-name" name="github" placeholder="{{ data.user_github_link }}"></textarea>
                 </dd>
               </dl>
-              <dl class="form-group">
+              <div class="form-group">
                 <a href="/change-password/{{ data.user_nickname }}/{{ data.user_primary_key }}={{ current_key }}">Change password</a>
-              </dl>
-              <button type="submit" class="button-submit">Update profile</button>
+                <button type="submit" class="button-submit">Update profile</button>
+              </div>
           </form>
           </div>
         </div>

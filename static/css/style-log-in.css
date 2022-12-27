@@ -12,6 +12,10 @@ body {
   align-items: center;
 }
 
+label[class] {
+  color: #Fff !important; 
+}
+
 .container {
   max-width: 1440px;
   margin: 0 auto;
@@ -28,8 +32,6 @@ a[class] {
   justify-content: center;
   align-items: center;
 }
-
-
 
 .button button {
   background-color: #fff;
@@ -105,4 +107,14 @@ form input:focus {
 .login label {
   font-family: "Bookerly";
   color: rgba(193, 23, 23, 0.76);
+}
+
+.forgotpass-link a {
+  color: #fff;
+}
+
+.forgotpass-link {
+  width: 100%;
+  padding: 5px 0px 10px 0px;
+  display: flex;
 }
