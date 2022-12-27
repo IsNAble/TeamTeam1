@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../static/css/reset.css">
-  <link rel="stylesheet" href="../static/css/changepass-page.css">
+  <link rel="stylesheet" href="../../static/css/reset.css">
+  <link rel="stylesheet" href="../../static/css/changepass-page.css">
   <link rel="icon" type="image/png" href="../../static/img/favicon-32x32.png" sizes="32x32"/>
   <link rel="icon" type="image/png" href="../../static/img/favicon-16x16.png" sizes="16x16"/>
   <link rel="stylesheet" href="../../static/img/favicon.ico">
@@ -20,7 +20,7 @@
           <form method="post">
             <input type="password" name="old-password" id="pass" placeholder="Enter old password">
             <div class="forgotpass-link">
-              <a href="" class="item__link">Forgot password?</a>
+              <a href="/forgot-password/{{ user }}/{{ primary_key }}={{ key }}&c" class="item__link">Forgot password?</a>
             </div>
             <label>{{ alert_up }}</label>
             <input type="password" name="password" id="pass" placeholder="Enter new password">

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../static/css/forgotpass.css">
-  <link rel="stylesheet" href="../static/css/reset.css">
+  <link rel="stylesheet" href="../../static/css/forgotpass.css">
+  <link rel="stylesheet" href="../../static/css/reset.css">
   <title>Document</title>
 </head>
 <body>
@@ -14,9 +14,9 @@
       <div class="wrapper">
         <div class="changepass">
           <h1> Send code to email address:</h1>
-          <article>vagina@gmail.com</article>
+          <article>{{ email_address }}</article>
           <div class="button">
-            <a href="">Decline</a>
+            <a href="{{ link }}">Decline</a>
             <a href="">Accept</a>
           </div>
         </div>

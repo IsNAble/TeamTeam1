@@ -459,6 +459,35 @@ def change_password(user, primary_key, key):
 		return render_template('changepass-page.html', user=user, primary_key=primary_key, key=key)
 
 
+@application.route('/forgot-password/<string:user>/<string:primary_key>=<string:key>&<string:page>')
+def forgot_password(user, primary_key, key, page):
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read() 	# Считывание текущего ключа
+
+	string = f'{current_key} {key}'.split()
+
+	if string[0] != string[1]:
+		return '404 NOT FOUND'
+
+	table = Users.query.all()
+
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
+			break
+	else:
+		return 'User not found'
+
+	if page == 'l':
+		link = '/login'
+	elif page == 'c':
+		link = f'/change-password/{data.user_nickname}/{data.user_primary_key}={current_key}'
+
+	email_address = data.user_email
+
+	return render_template('forgotpass.html', link=link, email_address=email_address, current_key=current_key)
+
+
 @application.route('/user-friends-list=<string:primary_key>&<string:key>')
 def friend_list(primary_key, key):
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
