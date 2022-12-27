@@ -1,0 +1,86 @@
+@font-face {
+  font-family:"Bookerly" ;
+  src: url(../font/Bookerly.ttf) format('opentype');
+}
+
+body {
+  background-color: #00110b;
+  color:#000;
+  font-family: 'Bookerly';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+article {
+  font-size: 20px;
+}
+
+a[class]{
+	text-decoration: none;
+  color:#000;
+  font-family: 'Bookerly';
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.changepass {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(255, 255, 255);
+  padding: 20px 10px;
+  border-radius: 20px;
+  min-width: 20rem;
+  height: 20rem;
+}
+
+.button a {
+  background-color: #000;
+  display: inline-block;
+  text-decoration: none;
+  color: #fff;
+  padding: 8px 0px;
+  width: 80px;
+  height: 40px;
+  border-radius: 30px;
+  transition: all 0.4s ease-out!important;
+}
+
+.button {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.button button {
+  background-color: #000;
+  text-decoration: none;
+  color: #fff;
+  padding: 8px 0px;
+  width: 80px;
+  height: 40px;
+  border-radius: 30px;
+  transition: all 0.4s ease-out!important;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+form input {
+  border-radius: 10px;
+  border-color: #000;
+}
