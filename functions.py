@@ -41,6 +41,10 @@ def generate_primary_key():
 	return str(randrange(1000, 10000))		# Генерация четырехзначного ключа 
 
 
+def generate_security_key():
+	return str(randrange(100000, 1000000)) 	# Генерация шестизначного ключа 
+
+
 def generate_admin_key(filename: str, length=6) -> None:
 	try:
 		with open(filename, 'r', encoding='utf-8') as file:
@@ -99,3 +103,4 @@ def github_api(nickname: str):
 	img = open(f'static/img/{name_photo}', 'wb')
 	img.write(response_photo.content)			# Считывание и запись картинки
 	img.close()
+

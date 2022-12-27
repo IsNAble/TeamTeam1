@@ -1,4 +1,4 @@
-from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key
+from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key, generate_security_key
 from send_email import send_email
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -478,14 +478,55 @@ def forgot_password(user, primary_key, key, page):
 	else:
 		return 'User not found'
 
-	if page == 'l':
-		link = '/login'
-	elif page == 'c':
-		link = f'/change-password/{data.user_nickname}/{data.user_primary_key}={current_key}'
+	if page == 'l': 	# Режим когда пользователь заходит из страницы логина
+		link_back = '/login'
+	elif page == 'c': 	# Режим когда пользователь заходит из страницы смены пароля
+		link_back = f'/change-password/{data.user_nickname}/{data.user_primary_key}={current_key}'
 
-	email_address = data.user_email
+	return render_template('forgotpass.html', link_back=link_back, data=data, current_key=current_key)
 
-	return render_template('forgotpass.html', link=link, email_address=email_address, current_key=current_key)
+
+@application.route('/enter-login', methods=['POST', 'GET'])
+def enter_login():
+	if request.method == 'GET':
+		return render_template('enterlogin.html')
+	elif request.method == 'POST':
+		email = request.form['email']
+
+		if email == '':
+			alert = 'field cannot be empty!'
+			return render_template('enterlogin.html', alert=alert)
+
+		table = Users.query.all()
+
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_email == email:
+				data = i
+				break
+		else:
+			alert = 'this email is not registered'
+			return render_template('enterlogin.html', alert=alert)
+
+		with open('users-key.txt', 'r', encoding='utf-8') as file:
+			current_key = file.read() 	# Считывание текущего ключа	
+
+		return redirect(f'/forgot-password/{data.user_nickname}/{data.user_primary_key}={current_key}&l')
+
+
+@application.route('/enter-code/<string:user>/<string:primary_key>=<string:key>&<string:code>', methods=['POST', 'GET'])
+def enter_code(user, primary_key, key, code):
+	if request.method == 'GET':
+		with open('users-key.txt', 'r', encoding='utf-8') as file:
+			current_key = file.read() 	# Считывание текущего ключа
+
+		string = f'{current_key} {key}'.split()
+
+		if string[0] != string[1]:
+			return '404 NOT FOUND'
+
+		return render_template('entercode.html')
+	elif request.method == 'POST':
+		pass
 
 
 @application.route('/user-friends-list=<string:primary_key>&<string:key>')
@@ -612,6 +653,35 @@ def accept(avatar, user, key, primary_key):
 		current_key = file.read() 	# Считывание текущего ключа
 
 	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
+
+
+@application.route('/accept-send-code/<string:user>/<string:primary_key>')
+def accept_send_code(user, primary_key):
+	table = Users.query.all()
+
+	for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		if i.user_primary_key == primary_key:
+			data = i
+			break
+	else:
+		return 'User not found'
+
+	code = generate_security_key()
+	message = f'Your verify code is:\n{code}'
+	recipient = data.user_email
+
+	encode = bin(int(code))[2:]
+
+	response = send_email(message, recipient)
+
+	with open('users-key.txt', 'r', encoding='utf-8') as file:
+		current_key = file.read() 	# Считывание текущего ключа
+
+	if response == 'Success':
+		return redirect(f'/enter-code/{data.user_nickname}/{data.user_primary_key}={current_key}&{encode}')
+	elif response == 'Email invalid':
+		alert = 'Email invalid'
+		return render_template('forgotpass.html', alert=alert)
 
 
 @application.route('/decline/<string:avatar>&<string:user>&<string:key>=<string:primary_key>')

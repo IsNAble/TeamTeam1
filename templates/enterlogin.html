@@ -12,12 +12,13 @@
   <section class="section">
     <div class="container">
       <div class="wrapper">
-        <form action="">
+        <form action="" method="post">
         <div class="changepass">
-          <h1> Send code to email address:</h1>
-          <input type="email" placeholder="Your email">
+          <h1> Enter your email:</h1>
+          <input type="email" name="email" placeholder="Your email">
+          <label>{{ alert }}</label>
           <div class="button">
-            <a href="{{ link }}">Decline</a>
+            <a href="/login">Decline</a>
             <button type="submit">Send</button>
           </div>
         </div>
