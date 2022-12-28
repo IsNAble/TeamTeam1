@@ -4,25 +4,26 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../../static/css/entercode.css">
-  <link rel="stylesheet" href="../../static/css/reset.css">
+  <link rel="stylesheet" href="../static/css/entercode.css">
+  <link rel="stylesheet" href="../static/css/reset.css">
+  <link rel="icon" href="../static/img/Flag_of_Ukraine.svg.png">
   <title>Enter code</title>
 </head>
 <body>
   <section class="section">
     <div class="container">
       <div class="wrapper">
-        <div class="changepass">
-          <h1>Enter code:</h1>
-          <form action="" method="post">
-            <input type="text" name="security-code" placeholder="Enter code">
-            <label>{{ alert }}</label>
-            <a href="">Resend code</a>
-          <div class="button">
+        <form action="" method="post"></form>
+          <div class="changepass">
+            <h1>Enter code:</h1>         
+              <input type="text" name="security-code" placeholder="Enter code">
+              <label>{{ alert }}</label>
+              <a href="">Resend code</a>
+            <div class="button">
             <a href="">Decline</a>
             <button type="submit">Confirm</button>
           </div>
-        </form>
+          </form>
         </div>
       </div>
     </div>

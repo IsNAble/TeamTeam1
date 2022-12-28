@@ -44,7 +44,11 @@ a{
   border-radius: 20px;
   min-width: 20rem;
   height: 20rem;
-  box-shadow: 10px 5px 5px rgb(106, 106, 106);
+}
+
+.changepass input {
+  border-radius: 10px;
+  border-color: #000;
 }
 
 .button a {
@@ -52,9 +56,7 @@ a{
   display: inline-block;
   text-decoration: none;
   color: #fff;
-  padding: 8px 0px;
-  width: 80px;
-  height: 40px;
+  padding: 8px 10px;
   border-radius: 30px;
   transition: all 0.4s ease-out!important;
 }
@@ -69,9 +71,8 @@ a{
   background-color: #000;
   color: #fff;
   border-radius: 30px;
+  padding: 8px 10px;
   cursor: pointer;
-  width: 80px;
-  height: 40px;
   transition: all 0.4s ease-out!important;
   border-width: 0;
 }
@@ -79,9 +80,5 @@ a{
 form {
   display: flex;
   flex-direction: column;
-}
-
-form input {
-  border-radius: 10px;
-  border-color: #000;
+  justify-content: space-between;
 }

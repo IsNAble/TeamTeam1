@@ -15,7 +15,8 @@ body {
 }
 
 label {
-  color: rgb(139, 25, 25);
+  font-family: "Bookerly";
+  color: rgb(255 216 216 / 76%);
 }
 
 ul:not([class]) {
@@ -52,10 +53,6 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.logo-nav h2 {
-
 }
 
 .nav {
@@ -131,7 +128,6 @@ a:hover {
   border: 1px solid #fff;
   border-radius: 12px;
   transition: all 0.2s ease-in-out!important;
-  -webkit-user-select: none;
   padding: 2px 10px;
 }
 

@@ -12,6 +12,11 @@ body {
   align-items: center;
 }
 
+label {
+  font-family: "Bookerly";
+  color: rgb(255 216 216 / 76%);
+}
+
 .container {
   max-width: 1440px;
   margin: 0 auto;
@@ -33,10 +38,9 @@ a[class]{
   background-color: #fff;
   border-radius: 30px;
   cursor: pointer;
-  width: 80px;
-  height: 40px;
   transition: all 0.4s ease-out!important;
-  border: none;
+  border: 1px solid #fff;
+  padding: 8px 10px;
 }
 
 .button {
@@ -44,6 +48,7 @@ a[class]{
   justify-content: space-between;
   border: none;
   align-items: center;
+  text-align: center;
   width: 100%;
 }
 
@@ -54,14 +59,13 @@ a[class]{
 
 .button a {
   background-color: #fff;
+  border: 1px solid #fff;
   display: inline-block;
   text-decoration: none;
   color: #000;
-  padding: 8px 0px;
-  width: 80px;
-  height: 40px;
+  padding: 8px 20px;
   border-radius: 30px;
-  transition: all 0.4s ease-out!important;
+  transition: all 0.3s ease-out!important;
 }
 
 .button a:hover {
@@ -88,6 +92,7 @@ a[class]{
   flex-direction: column;
   align-items: center;
 }
+
 form input {
   margin-bottom: 15px;
   border-radius: 10px;
@@ -100,11 +105,6 @@ form input {
 
 form input:focus {
   opacity: 0.9;
-}
-
-.sign-up label {
-  font-family: "Bookerly";
-  color: rgba(193, 23, 23, 0.76);
 }
 
 .forgotpass-link a {
