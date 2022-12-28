@@ -1,4 +1,4 @@
-from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key, generate_security_key
+from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key, generate_security_key, found_user
 from send_email import send_email
 from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -166,12 +166,7 @@ def user(user, primary_key, key):
 	if request.method == 'GET':
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
-			if i.user_primary_key == primary_key:
-				data = i
-				break
-		else:
-			return 'User not found'
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Считывание текущего ключа
@@ -192,12 +187,7 @@ def user(user, primary_key, key):
 
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
-			if i.user_primary_key == primary_key:
-				data = i
-				break
-		else:
-			return 'User not found'
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 		if '#' not in nickname_with_key:
 			with open('users-key.txt', 'r', encoding='utf-8') as file:
@@ -225,12 +215,7 @@ def user(user, primary_key, key):
 def profile(user, primary_key, key):
 	table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read()
@@ -257,12 +242,7 @@ def public_profile(user, previous_primary_key, primary_key, key):
 	if request.method == 'GET':
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
-			if i.user_primary_key == primary_key:
-				data = i
-				break
-		else:
-			return 'User not found'
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 		for i in table:
 			if i.user_primary_key == previous_primary_key:
@@ -292,12 +272,7 @@ def public_profile(user, previous_primary_key, primary_key, key):
 	elif request.method == 'POST':
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
-			if i.user_primary_key == primary_key:
-				data = i
-				break
-		else:
-			return 'User not found'
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 		data.user_incoming_invitations = f'{user}#{previous_primary_key}'
 
@@ -323,12 +298,7 @@ def edit_profile(user, primary_key, key):
 		flag = True 
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
-			if i.user_primary_key == primary_key:
-				current_user = i
-				break
-		else:
-			return '404 NOT FOUND'
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 		if first_name == '':
 			first_name = current_user.user_first_name
@@ -386,12 +356,7 @@ def edit_profile(user, primary_key, key):
 	elif request.method == 'GET':
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
-			if i.user_primary_key == primary_key:
-				data = i
-				break
-		else:
-			return 'User not found'
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 		
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Считывание текущего ключа
@@ -416,12 +381,7 @@ def change_password(user, primary_key, key):
 	if request.method == 'POST':
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
-			if i.user_primary_key == primary_key:
-				data = i
-				break
-		else:
-			return '404 NOT FOUND'
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 		old_password = request.form['old-password']
 		password = request.form['password']
@@ -466,12 +426,7 @@ def new_password(user, primary_key, key):
 	elif request.method == 'POST':
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
-			if i.user_primary_key == primary_key:
-				data = i
-				break
-		else:
-			return '404 NOT FOUND'
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 		password = request.form['password']
 		repeatpassword = request.form['repeatpassword']
@@ -510,12 +465,7 @@ def forgot_password(user, primary_key, key, page):
 
 	table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 	if page == 'l': 	# Режим когда пользователь заходит из страницы логина
 		link_back = '/login'
@@ -587,12 +537,7 @@ def friend_list(primary_key, key):
 
 	table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 	friends_list = data.user_friends_list.split() 	# Получение данных о друзьях пользователя
 
@@ -612,19 +557,9 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 
 	table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
-	for i in table:		# Поиск предыдущего пользователя по его уникальному ключу
-		if i.user_primary_key == previous_primary_key:
-			previous_data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, previous_primary_key) 	# Поиск предыдущего пользователя по его уникальному ключу
 
 	if data.user_incoming_invitations == 'empty': 	# Запись данных про запросы в друзья
 		data.user_incoming_invitations = f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
@@ -647,12 +582,7 @@ def invite_list(user, primary_key, key):
 
 	table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 	invites_list = data.user_incoming_invitations.split() 	# split на каждое приглашение отдельно
 
@@ -666,12 +596,7 @@ def invite_list(user, primary_key, key):
 def accept(avatar, user, key, primary_key):
 	table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 	invites_list = data.user_incoming_invitations.split() 	# Разбитие на каждый инвайт
 
@@ -705,12 +630,7 @@ def accept(avatar, user, key, primary_key):
 def accept_send_code(user, primary_key):
 	table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 	code = generate_security_key()
 	message = f'Your verify code is:\n{code}'
@@ -735,12 +655,7 @@ def accept_send_code(user, primary_key):
 def decline(avatar, user, key, primary_key):
 	table = Users.query.all()
 
-	for i in table:		# Поиск текущего пользователя по его уникальному ключу
-		if i.user_primary_key == primary_key:
-			data = i
-			break
-	else:
-		return 'User not found'
+	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
 	invites_list = data.user_incoming_invitations.split() 	# Разбитие на каждый инвайт
 

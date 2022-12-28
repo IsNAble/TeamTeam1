@@ -4,6 +4,17 @@ import json
 import re
 
 
+def found_user(database, primary_key):
+	for i in database:
+		if i.user_primary_key == primary_key:
+			user = i
+			break
+	else:
+		return 'User not found'
+
+	return user
+
+
 def check_password(password: str) -> bool:
 	upper = False 		# Проверка верхнего регистра
 	lower = False 		# Проверка нижнего регистра
