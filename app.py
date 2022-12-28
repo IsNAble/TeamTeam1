@@ -50,7 +50,7 @@ def login_page():
 		inputs.append(user_password)
 
 		if all(inputs) is False:
-			alert = 'Поля не могут быть пустыми'
+			alert = 'Fields cannot be empty'
 			return render_template('log-in.html', alert=alert)
 
 
@@ -63,12 +63,11 @@ def login_page():
 			if (i.user_nickname == user_login or i.user_email == user_login) and i.user_password == user_password:
 				return redirect(f'/home/{i.user_nickname}/{i.user_primary_key}={current_key}')
 
-		alert = 'Неправильный логин или пароль'
+		alert = 'Incorrect login or password'
 		return render_template('log-in.html', alert=alert)
 
 	elif request.method == 'GET':
-		alert = ""
-		return render_template('log-in.html', alert=alert)
+		return render_template('log-in.html')
 
 
 @application.route('/sign-up', methods=['POST', 'GET'])
@@ -86,7 +85,7 @@ def sign_up():
 		inputs.append(this_user_nickname)
 
 		if all(inputs) is False:
-			result[0] = 'Поля не могут быть пустыми'
+			result[0] = 'Fields cannot be empty'
 			return render_template('sign-up.html', result=result) 
 
 		list_nicknames, list_emails, list_primary_keys = [], [], []
@@ -99,9 +98,9 @@ def sign_up():
 			list_primary_keys.append(i.user_primary_key)
 
 
-		info_nickname = f'Никнейм {this_user_nickname} занят'
-		info_email = f'Почта {user_email} уже зарегистрирована'
-		info_password = 'Пароли не совпадают'
+		info_nickname = f'Nickname {this_user_nickname} already is use'
+		info_email = f'Email {user_email} already registered'
+		info_password = "Passwords don't equals"
 
 		if this_user_nickname in list_nicknames:
 			result[0] = info_nickname
@@ -193,7 +192,7 @@ def user(user, primary_key, key):
 			with open('users-key.txt', 'r', encoding='utf-8') as file:
 				current_key = file.read() 	# Считывание текущего ключа
 
-			alert = 'Неккоректный поиск'
+			alert = 'Incorrect search'
 			return render_template('homelogin.html', data=data, current_key=current_key, alert=alert)
 
 		nickname_with_key = nickname_with_key.split('#')
@@ -207,7 +206,7 @@ def user(user, primary_key, key):
 			if i.user_primary_key == nickname_with_key[1]:
 				return redirect(f'/public-profile/{nickname_with_key[0]}/{primary_key}-{nickname_with_key[1]}={current_key}')
 		else:
-			alert = 'Такого пользователя не существует'
+			alert = 'This user does not exist'
 			return render_template('homelogin.html', data=data, current_key=current_key, alert=alert)
 
 
@@ -317,7 +316,7 @@ def edit_profile(user, primary_key, key):
 
 
 		if check_extension(file.filename) is False and file.filename != '':
-			return 'Произошла ошибка, недопустимое расширение'
+			return 'An error occurred, invalid file extension'
 
 		if file.filename == '': 	# Если картинка не передана, соотвестсвенно ничего сохранять не нужно
 			flag = False
@@ -388,19 +387,19 @@ def change_password(user, primary_key, key):
 		repeatpassword = request.form['repeatpassword']
 
 		if old_password == "" or password == "" or repeatpassword == "":
-			alert_up = 'Поле не может быть пустым'
+			alert_up = 'The field cannot be empty'
 			return render_template('changepass.html', alert_up=alert_up, user=user, primary_key=primary_key, key=key)
 
 		if old_password.strip() != data.user_password:
-			alert_up = 'Вы ввели неправильный пароль'
+			alert_up = 'You entered the wrong password'
 			return render_template('changepass-page.html', alert_up=alert_up, user=user, primary_key=primary_key, key=key)
 
 		if password.strip() != repeatpassword.strip():
-			alert_down = 'Пароли не совпадают'
+			alert_down = "Passwords don't equals"
 			return render_template('changepass-page.html', alert_down=alert_down, user=user, primary_key=primary_key, key=key)
 
 		if password.strip() == data.user_password:
-			alert_down = 'Новый пароль не должен равняться старому'
+			alert_down = 'The new password must not be the same as the old one'
 			return render_template('changepass-page.html', alert_down=alert_down, user=user, primary_key=primary_key, key=key)
 
 		data.user_password = password
@@ -488,7 +487,7 @@ def enter_login():
 
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+		for i in table:		# Поиск текущего пользователя по его email адресу
 			if i.user_email == email:
 				data = i
 				break
@@ -510,17 +509,23 @@ def enter_code(user, primary_key, key, code):
 
 		string = f'{current_key} {key}'.split()
 
+		table = Users.query.all()
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+
 		if string[0] != string[1]:
 			return '404 NOT FOUND'
 
-		return render_template('entercode.html')
+		return render_template('entercode.html', data=data)
 	elif request.method == 'POST':
 		user_code = request.form['security-code']
 		code_with_url = str(int(code[::-1], 2))
 
+		table = Users.query.all()
+		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+
 		if user_code.strip() != code_with_url:
 			alert = 'Wrong code'
-			return render_template('entercode.html', alert=alert)
+			return render_template('entercode.html', data=data, alert=alert)
 
 		return redirect(f'/new-password/{user}/{primary_key}={key}')
 
