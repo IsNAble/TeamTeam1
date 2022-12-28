@@ -128,8 +128,8 @@ def sign_up():
 		try:
 			db.session.add(users) 	# Добавление новых данных в SQL
 			db.session.commit()
-		except:
-			return 'error'	
+		except Exception as _ex:
+			return _ex	
 
 		table = Users.query.all()
 
@@ -367,8 +367,8 @@ def edit_profile(user, primary_key, key):
 
 		try:
 			db.session.commit()
-		except:
-			return 'Произошла ошибка'
+		except Exception as _ex:
+			return _ex
 
 		if flag:
 			list_image = os.listdir('static/img') 	# Список файлов в папке img
@@ -448,8 +448,8 @@ def change_password(user, primary_key, key):
 
 		try:
 			db.session.commit()
-		except:
-			return 'error'
+		except Exception as _ex:
+			return _ex
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read()
@@ -457,6 +457,45 @@ def change_password(user, primary_key, key):
 		return redirect(f'/edit-profile/{data.user_nickname}/{data.user_primary_key}={current_key}')
 	elif request.method == 'GET':
 		return render_template('changepass-page.html', user=user, primary_key=primary_key, key=key)
+
+
+@application.route('/new-password/<string:user>/<string:primary_key>=<string:key>', methods=['POST', 'GET'])
+def new_password(user, primary_key, key):
+	if request.method == 'GET':
+		return render_template('newpassword.html')
+	elif request.method == 'POST':
+		table = Users.query.all()
+
+		for i in table:		# Поиск текущего пользователя по его уникальному ключу
+			if i.user_primary_key == primary_key:
+				data = i
+				break
+		else:
+			return '404 NOT FOUND'
+
+		password = request.form['password']
+		repeatpassword = request.form['repeatpassword']
+
+		if password.strip() != repeatpassword.strip():
+			alert = 'Passwords are not equal!'
+			return render_template('newpassword.html', alert=alert)
+
+		if password.strip() == data.user_password:
+			alert = 'The new password cannot be equal to the old one!'
+			return render_template('newpassword.html', alert=alert)
+
+		data.user_password = password
+		data.user_repeat_password = repeatpassword
+
+		try:
+			db.session.commit()
+		except Exception as _ex:
+			return _ex
+
+		with open('users-key.txt', 'r', encoding='utf-8') as file:
+			current_key = file.read()
+
+		return redirect(f'/home/{data.user_nickname}/{data.user_primary_key}={current_key}')
 
 
 @application.route('/forgot-password/<string:user>/<string:primary_key>=<string:key>&<string:page>')
@@ -526,7 +565,14 @@ def enter_code(user, primary_key, key, code):
 
 		return render_template('entercode.html')
 	elif request.method == 'POST':
-		pass
+		user_code = request.form['security-code']
+		code_with_url = str(int(code[::-1], 2))
+
+		if user_code.strip() != code_with_url:
+			alert = 'Wrong code'
+			return render_template('entercode.html', alert=alert)
+
+		return redirect(f'/new-password/{user}/{primary_key}={key}')
 
 
 @application.route('/user-friends-list=<string:primary_key>&<string:key>')
@@ -587,8 +633,8 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 
 	try:
 		db.session.commit()
-	except:
-		return 'error'
+	except Exception as _ex:
+		return _ex
 
 	return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
 
@@ -646,8 +692,8 @@ def accept(avatar, user, key, primary_key):
 
 	try:
 		db.session.commit()
-	except:
-		return 'error'
+	except Exception as _ex:
+			return _ex
 
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Считывание текущего ключа
@@ -671,6 +717,7 @@ def accept_send_code(user, primary_key):
 	recipient = data.user_email
 
 	encode = bin(int(code))[2:]
+	encode = encode[::-1]
 
 	response = send_email(message, recipient)
 
@@ -709,8 +756,8 @@ def decline(avatar, user, key, primary_key):
 
 	try:
 		db.session.commit()
-	except:
-		return 'error'
+	except Exception as _ex:
+		return _ex
 
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Считывание текущего ключа
