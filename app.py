@@ -43,7 +43,7 @@ def main_page():
 @application.route('/login', methods=['POST', 'GET'])
 def login_page():
 	if request.method == 'POST':
-		user_login = request.form['login'] 		# Получение значений из html
+		user_login = request.form['login'] 		# Getting values from html
 		user_password = request.form['pass']
 		inputs = []
 		inputs.append(user_login)
@@ -59,7 +59,7 @@ def login_page():
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read()
 
-		for i in table:		# Условия для логина
+		for i in table:		# Conditions for login
 			if (i.user_nickname == user_login or i.user_email == user_login) and i.user_password == user_password:
 				return redirect(f'/home/{i.user_nickname}/{i.user_primary_key}={current_key}')
 
@@ -74,7 +74,7 @@ def login_page():
 def sign_up():
 	if request.method == 'POST':
 		user_email = request.form['email']
-		user_password = request.form['password'] 				# Получение значений из html
+		user_password = request.form['password'] 				# Getting values from html
 		user_repeat_password = request.form['repeatpassword']
 		this_user_nickname = request.form['nickname']
 		inputs = []
@@ -113,7 +113,7 @@ def sign_up():
 			return render_template('sign-up.html', result=result)
 
 		current_primary_key = generate_primary_key()
-		while current_primary_key in list_primary_keys:		# Генерация собственного ключа пользователя
+		while current_primary_key in list_primary_keys:		# Generation of a unique user key
 			current_primary_key = generate_primary_key()
 
 		users = Users(
@@ -125,7 +125,7 @@ def sign_up():
 			)
 
 		try:
-			db.session.add(users) 	# Добавление новых данных в SQL
+			db.session.add(users) 	# Adding new data to SQL
 			db.session.commit()
 		except Exception as _ex:
 			return _ex	
@@ -133,9 +133,9 @@ def sign_up():
 		table = Users.query.all()
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read()	# Считывание текущего ключа
+			current_key = file.read()	# Reading the current key
 
-		for i in table:		# Поиск текущего пользователя в бд
+		for i in table:		# Search for the current user in the database by nickname
 			if i.user_nickname == this_user_nickname:
 				return redirect(f'/home/{i.user_nickname}/{i.user_primary_key}={current_key}') 
 
@@ -147,7 +147,7 @@ def sign_up():
 @application.route('/users=<string:key>')
 def users_list(key):
 	with open('secret-key.txt', 'r', encoding='utf-8') as file:
-		output = file.readlines()	# Считывание ключа админ-панели
+		output = file.readlines()	# Reading the admin panel key
 		current_key = output[0]
 
 	string = f'{current_key} {key}'.split()
@@ -182,15 +182,15 @@ def user(user, primary_key, key):
 		else:
 			return 'User not found'
 	elif request.method == 'POST':
-		nickname_with_key = request.form['search-bar']		# Получение никнейма и айди пользователя из поиска
+		nickname_with_key = request.form['search-bar']		# Getting a nickname and id of a user from a search
 
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		if '#' not in nickname_with_key:
 			with open('users-key.txt', 'r', encoding='utf-8') as file:
-				current_key = file.read() 	# Считывание текущего ключа
+				current_key = file.read() 	# Reading the current key
 
 			alert = 'Incorrect search'
 			return render_template('homelogin.html', data=data, current_key=current_key, alert=alert)
@@ -198,7 +198,7 @@ def user(user, primary_key, key):
 		nickname_with_key = nickname_with_key.split('#')
 		
 		with open('users-key.txt', 'r', encoding='utf-8') as file: 		
-			current_key = file.read()
+			current_key = file.read() 	# Reading the current key
 
 		table = Users.query.all()
 
@@ -214,10 +214,10 @@ def user(user, primary_key, key):
 def profile(user, primary_key, key):
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read()
+		current_key = file.read()	# Reading the current key
 
 	string = f'{current_key} {key}'.split()
 
@@ -241,7 +241,7 @@ def public_profile(user, previous_primary_key, primary_key, key):
 	if request.method == 'GET':
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		for i in table:
 			if i.user_primary_key == previous_primary_key:
@@ -251,7 +251,7 @@ def public_profile(user, previous_primary_key, primary_key, key):
 			return 'User not found'
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read()
+			current_key = file.read() 	
 
 		string = f'{current_key} {key}'.split()
 
@@ -271,7 +271,7 @@ def public_profile(user, previous_primary_key, primary_key, key):
 	elif request.method == 'POST':
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		data.user_incoming_invitations = f'{user}#{previous_primary_key}'
 
@@ -289,7 +289,7 @@ def edit_profile(user, primary_key, key):
 		file = request.files['file']
 		first_name = request.form['first-name']
 		last_name = request.form['last-name']
-		nickname = request.form['nickname']			# Получение значений из html
+		nickname = request.form['nickname']			# Getting values from html
 		email = request.form['email']
 		description = request.form['textarea']
 		phone_number = request.form['phone-number']
@@ -297,7 +297,7 @@ def edit_profile(user, primary_key, key):
 		flag = True 
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		if first_name == '':
 			first_name = current_user.user_first_name
@@ -305,7 +305,7 @@ def edit_profile(user, primary_key, key):
 			last_name = current_user.user_last_name
 		if nickname == '':
 			nickname = current_user.user_nickname
-		if email == '': 							# Если значение не указано, оставлять текущее
+		if email == '': 							# If no value is specified, leave current
 			email = current_user.user_email
 		if description == '':
 			description = current_user.user_description
@@ -318,7 +318,7 @@ def edit_profile(user, primary_key, key):
 		if check_extension(file.filename) is False and file.filename != '':
 			return 'An error occurred, invalid file extension'
 
-		if file.filename == '': 	# Если картинка не передана, соотвестсвенно ничего сохранять не нужно
+		if file.filename == '': 	# If the image is not transferred, nothing needs to be saved
 			flag = False
 
 		if flag:
@@ -329,7 +329,7 @@ def edit_profile(user, primary_key, key):
 		current_user.user_first_name = first_name 		
 		current_user.user_last_name = last_name 		
 		current_user.user_nickname = nickname 			
-		current_user.user_email = email 				# Запись данных в бд	
+		current_user.user_email = email 				# Writing data to the database	
 		current_user.user_description = description
 		current_user.user_phone_number = phone_number
 		current_user.user_github_link = github_link
@@ -340,32 +340,32 @@ def edit_profile(user, primary_key, key):
 			return _ex
 
 		if flag:
-			list_image = os.listdir('static/img') 	# Список файлов в папке img
+			list_image = os.listdir('static/img') 	# List files in img folder
 			for img in list_image:
-				if user + str(current_user.user_id) in img: 	# Если это предыдущий файл пользователя
-					os.remove(f'static/img/{img}') 				# то его удаляем
+				if user + str(current_user.user_id) in img: 	# If this is the user's previous file
+					os.remove(f'static/img/{img}') 				# then it is removed
 
-			file.save(user_avatar_path)		# Сохранение картинки 
+			file.save(user_avatar_path)		# Saving a picture
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	# Считывание текущего ключа
+			current_key = file.read() 	# Reading the current key
 
 		return redirect(f'/home/{user}/{primary_key}={current_key}')
 
 	elif request.method == 'GET':
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 		
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	# Считывание текущего ключа
+			current_key = file.read() 	# Reading the current key
 
 		string = f'{current_key} {key}'.split()
 
 		if data is not None and data.user_nickname == user and string[0] == string[1]:
 			if data.user_first_name == "":
 				data.user_first_name = 'No data'
-			if data.user_last_name == "": 			# Установка значений по умолчанию
+			if data.user_last_name == "": 			# Setting default values
 				data.user_last_name = 'No data'
 			if data.user_description == "":
 				data.user_description = 'No data'
@@ -380,7 +380,7 @@ def change_password(user, primary_key, key):
 	if request.method == 'POST':
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		old_password = request.form['old-password']
 		password = request.form['password']
@@ -411,7 +411,7 @@ def change_password(user, primary_key, key):
 			return _ex
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read()
+			current_key = file.read() 	# Reading the current key
 
 		return redirect(f'/edit-profile/{data.user_nickname}/{data.user_primary_key}={current_key}')
 	elif request.method == 'GET':
@@ -425,7 +425,7 @@ def new_password(user, primary_key, key):
 	elif request.method == 'POST':
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		password = request.form['password']
 		repeatpassword = request.form['repeatpassword']
@@ -455,7 +455,7 @@ def new_password(user, primary_key, key):
 @application.route('/forgot-password/<string:user>/<string:primary_key>=<string:key>&<string:page>')
 def forgot_password(user, primary_key, key, page):
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Считывание текущего ключа
+		current_key = file.read() 	# Reading the current key
 
 	string = f'{current_key} {key}'.split()
 
@@ -464,11 +464,11 @@ def forgot_password(user, primary_key, key, page):
 
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
-	if page == 'l': 	# Режим когда пользователь заходит из страницы логина
+	if page == 'l': 	# Mode when the user enters from the login page
 		link_back = '/login'
-	elif page == 'c': 	# Режим когда пользователь заходит из страницы смены пароля
+	elif page == 'c': 	# Mode when the user enters from the password change page
 		link_back = f'/change-password/{data.user_nickname}/{data.user_primary_key}={current_key}'
 
 	return render_template('forgotpass.html', link_back=link_back, data=data, current_key=current_key)
@@ -487,7 +487,7 @@ def enter_login():
 
 		table = Users.query.all()
 
-		for i in table:		# Поиск текущего пользователя по его email адресу
+		for i in table:		# Search for the current user by his email address
 			if i.user_email == email:
 				data = i
 				break
@@ -496,7 +496,7 @@ def enter_login():
 			return render_template('enterlogin.html', alert=alert)
 
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	# Считывание текущего ключа	
+			current_key = file.read() 	# Reading the current key	
 
 		return redirect(f'/forgot-password/{data.user_nickname}/{data.user_primary_key}={current_key}&l')
 
@@ -505,12 +505,12 @@ def enter_login():
 def enter_code(user, primary_key, key, code):
 	if request.method == 'GET':
 		with open('users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	# Считывание текущего ключа
+			current_key = file.read() 	# Reading the current key
 
 		string = f'{current_key} {key}'.split()
 
 		table = Users.query.all()
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		if string[0] != string[1]:
 			return '404 NOT FOUND'
@@ -521,7 +521,7 @@ def enter_code(user, primary_key, key, code):
 		code_with_url = str(int(code[::-1], 2))
 
 		table = Users.query.all()
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		if user_code.strip() != code_with_url:
 			alert = 'Wrong code'
@@ -533,7 +533,7 @@ def enter_code(user, primary_key, key, code):
 @application.route('/user-friends-list=<string:primary_key>&<string:key>')
 def friend_list(primary_key, key):
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Считывание текущего ключа
+		current_key = file.read() 	# Reading the current key
 
 	string = f'{current_key} {key}'.split()
 
@@ -542,12 +542,12 @@ def friend_list(primary_key, key):
 
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
-	friends_list = data.user_friends_list.split() 	# Получение данных о друзьях пользователя
+	friends_list = data.user_friends_list.split() 	# Getting data about the user's friends
 
 	for i in range(len(friends_list)):
-		friends_list[i] = friends_list[i].split('#') 	# Разделение каждого друга на кортеж (аватар, никнейм, ключ)
+		friends_list[i] = friends_list[i].split('#') 	# Dividing each friend into a tuple (avatar, nickname, key)
 
 	return render_template('friends-page.html', data=data, friends_list=friends_list, current_key=current_key)
 
@@ -557,16 +557,16 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read()
 
-	if primary_key == previous_primary_key: 	# Условия при котором пользователь отправляет запрос самому себе
+	if primary_key == previous_primary_key: 	# Conditions under which the user sends a request to himself
 		return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
 
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
-	data = found_user(table, previous_primary_key) 	# Поиск предыдущего пользователя по его уникальному ключу
+	data = found_user(table, previous_primary_key) 	# Search for a previous user by their unique key
 
-	if data.user_incoming_invitations == 'empty': 	# Запись данных про запросы в друзья
+	if data.user_incoming_invitations == 'empty': 	# Record data about friend invites
 		data.user_incoming_invitations = f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
 	elif f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}' not in data.user_incoming_invitations:
 		data.user_incoming_invitations += f' {previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
@@ -587,12 +587,12 @@ def invite_list(user, primary_key, key):
 
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
-	invites_list = data.user_incoming_invitations.split() 	# split на каждое приглашение отдельно
+	invites_list = data.user_incoming_invitations.split() 	# split all invitations
 
 	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 	# Разбитие элементов на кортеж (аватар, никнейм, ключ)
+		invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
 
 	return render_template('invite-list.html', data=data, invites_list=invites_list, primary_key=primary_key, current_key=current_key[1])
 
@@ -601,20 +601,20 @@ def invite_list(user, primary_key, key):
 def accept(avatar, user, key, primary_key):
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
-	invites_list = data.user_incoming_invitations.split() 	# Разбитие на каждый инвайт
+	invites_list = data.user_incoming_invitations.split() 	# Split per invite
 
 	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 	# Разбитие элементов на кортеж (аватар, никнейм, ключ)
-		if invites_list[i][-1] == key:		# Если это пользователь, инвайт которого мы принимаем, убрать его
+		invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
+		if invites_list[i][-1] == key:		# If this is the user we are accepting invite, remove him
 			invites_list[i] = ''
-		invites_list[i] = '#'.join(invites_list[i]) 	# Соединить элемент обратно по символу #
+		invites_list[i] = '#'.join(invites_list[i]) 	# Join element back by type avatar#nickname#key
 
-	invites_list = " ".join(invites_list) 	 # Соединить все запросы
+	invites_list = " ".join(invites_list) 	 # Join all invites
 
-	if data.user_friends_list == 'empty': 	# default значение
-		data.user_friends_list = f'{avatar}#{user}#{key}' 	# Добавление в друзья и удаление инвайта после этого
+	if data.user_friends_list == 'empty': 	# default value
+		data.user_friends_list = f'{avatar}#{user}#{key}' 	# Adding as a friend and deleting an invite after that
 		data.user_incoming_invitations = invites_list
 	elif f'{avatar}#{user}#{key}' not in data.user_friends_list:
 		data.user_friends_list += f' {avatar}#{user}#{key}'
@@ -626,7 +626,7 @@ def accept(avatar, user, key, primary_key):
 			return _ex
 
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Считывание текущего ключа
+		current_key = file.read() 	# Reading the current key
 
 	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
 
@@ -635,7 +635,7 @@ def accept(avatar, user, key, primary_key):
 def accept_send_code(user, primary_key):
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 	code = generate_security_key()
 	message = f'Your verify code is:\n{code}'
@@ -647,7 +647,7 @@ def accept_send_code(user, primary_key):
 	response = send_email(message, recipient)
 
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Считывание текущего ключа
+		current_key = file.read() 	# Reading the current key
 
 	if response == 'Success':
 		return redirect(f'/enter-code/{data.user_nickname}/{data.user_primary_key}={current_key}&{encode}')
@@ -660,19 +660,19 @@ def accept_send_code(user, primary_key):
 def decline(avatar, user, key, primary_key):
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
-	invites_list = data.user_incoming_invitations.split() 	# Разбитие на каждый инвайт
+	invites_list = data.user_incoming_invitations.split() 	# Split per invite
 
 	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 	# Разбитие элементов на кортеж (аватар, никнейм, ключ)
-		if invites_list[i][-1] == key: 		# Если это пользователь, инвайт которого мы принимаем, убрать его
+		invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
+		if invites_list[i][-1] == key: 		# If this is the user we are accepting invite, remove him
 			invites_list[i] = ''
-		invites_list[i] = '#'.join(invites_list[i]) 	# Соединить элемент обратно по символу #
+		invites_list[i] = '#'.join(invites_list[i]) 	# Join element back by type avatar#nickname#key
 
-	invites_list = " ".join(invites_list) 	 # Соединить все запросы
+	invites_list = " ".join(invites_list) 	 # Join all invites
 
-	data.user_incoming_invitations = invites_list 		# Перезапись списка инвайтов
+	data.user_incoming_invitations = invites_list 		# Rewriting the invite list
 
 	try:
 		db.session.commit()
@@ -680,7 +680,7 @@ def decline(avatar, user, key, primary_key):
 		return _ex
 
 	with open('users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Считывание текущего ключа
+		current_key = file.read() 	# Reading the current key
 
 	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
 
