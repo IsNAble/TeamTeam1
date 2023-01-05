@@ -56,7 +56,7 @@ def login_page():
 
 		table = Users.query.all()
 
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read()
 
 		for i in table:		# Conditions for login
@@ -132,7 +132,7 @@ def sign_up():
 
 		table = Users.query.all()
 
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read()	# Reading the current key
 
 		for i in table:		# Search for the current user in the database by nickname
@@ -146,7 +146,7 @@ def sign_up():
 
 @application.route('/users=<string:key>')
 def users_list(key):
-	with open('secret-key.txt', 'r', encoding='utf-8') as file:
+	with open('keys/secret-key.txt', 'r', encoding='utf-8') as file:
 		output = file.readlines()	# Reading the admin panel key
 		current_key = output[0]
 
@@ -167,7 +167,7 @@ def user(user, primary_key, key):
 
 		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
 
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Считывание текущего ключа
 
 		string = f'{current_key} {key}'.split()
@@ -189,7 +189,7 @@ def user(user, primary_key, key):
 		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		if '#' not in nickname_with_key:
-			with open('users-key.txt', 'r', encoding='utf-8') as file:
+			with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 				current_key = file.read() 	# Reading the current key
 
 			alert = 'Incorrect search'
@@ -197,7 +197,7 @@ def user(user, primary_key, key):
 
 		nickname_with_key = nickname_with_key.split('#')
 		
-		with open('users-key.txt', 'r', encoding='utf-8') as file: 		
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file: 		
 			current_key = file.read() 	# Reading the current key
 
 		table = Users.query.all()
@@ -216,7 +216,7 @@ def profile(user, primary_key, key):
 
 	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
+	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read()	# Reading the current key
 
 	string = f'{current_key} {key}'.split()
@@ -250,7 +250,7 @@ def public_profile(user, previous_primary_key, primary_key, key):
 		else:
 			return 'User not found'
 
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	
 
 		string = f'{current_key} {key}'.split()
@@ -347,7 +347,7 @@ def edit_profile(user, primary_key, key):
 
 			file.save(user_avatar_path)		# Saving a picture
 
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Reading the current key
 
 		return redirect(f'/home/{user}/{primary_key}={current_key}')
@@ -357,7 +357,7 @@ def edit_profile(user, primary_key, key):
 
 		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 		
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Reading the current key
 
 		string = f'{current_key} {key}'.split()
@@ -410,7 +410,7 @@ def change_password(user, primary_key, key):
 		except Exception as _ex:
 			return _ex
 
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Reading the current key
 
 		return redirect(f'/edit-profile/{data.user_nickname}/{data.user_primary_key}={current_key}')
@@ -446,7 +446,7 @@ def new_password(user, primary_key, key):
 		except Exception as _ex:
 			return _ex
 
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read()
 
 		return redirect(f'/home/{data.user_nickname}/{data.user_primary_key}={current_key}')
@@ -454,7 +454,7 @@ def new_password(user, primary_key, key):
 
 @application.route('/forgot-password/<string:user>/<string:primary_key>=<string:key>&<string:page>')
 def forgot_password(user, primary_key, key, page):
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
+	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Reading the current key
 
 	string = f'{current_key} {key}'.split()
@@ -495,7 +495,7 @@ def enter_login():
 			alert = 'this email is not registered'
 			return render_template('enterlogin.html', alert=alert)
 
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Reading the current key	
 
 		return redirect(f'/forgot-password/{data.user_nickname}/{data.user_primary_key}={current_key}&l')
@@ -504,7 +504,7 @@ def enter_login():
 @application.route('/enter-code/<string:user>/<string:primary_key>=<string:key>&<string:code>', methods=['POST', 'GET'])
 def enter_code(user, primary_key, key, code):
 	if request.method == 'GET':
-		with open('users-key.txt', 'r', encoding='utf-8') as file:
+		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 			current_key = file.read() 	# Reading the current key
 
 		string = f'{current_key} {key}'.split()
@@ -532,7 +532,7 @@ def enter_code(user, primary_key, key, code):
 
 @application.route('/user-friends-list=<string:primary_key>&<string:key>')
 def friend_list(primary_key, key):
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
+	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Reading the current key
 
 	string = f'{current_key} {key}'.split()
@@ -554,7 +554,7 @@ def friend_list(primary_key, key):
 
 @application.route('/send-invite&<string:user>-<string:primary_key>&<string:previous_user>-<string:previous_primary_key>')
 def send_invite(user, primary_key, previous_user, previous_primary_key):
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
+	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read()
 
 	if primary_key == previous_primary_key: 	# Conditions under which the user sends a request to himself
@@ -625,7 +625,7 @@ def accept(avatar, user, key, primary_key):
 	except Exception as _ex:
 			return _ex
 
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
+	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Reading the current key
 
 	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
@@ -646,7 +646,7 @@ def accept_send_code(user, primary_key):
 
 	response = send_email(message, recipient)
 
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
+	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Reading the current key
 
 	if response == 'Success':
@@ -679,7 +679,7 @@ def decline(avatar, user, key, primary_key):
 	except Exception as _ex:
 		return _ex
 
-	with open('users-key.txt', 'r', encoding='utf-8') as file:
+	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
 		current_key = file.read() 	# Reading the current key
 
 	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')

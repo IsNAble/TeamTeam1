@@ -40,7 +40,7 @@ def check_extension(filename: str) -> bool: 	# Function to check valid file exte
 
 
 def check_key(key: str, filename='users-key.txt') -> bool:
-	with open(filename, 'r', encoding='utf-8') as file:
+	with open('keys/' + filename, 'r', encoding='utf-8') as file:
 		current_key = file.read()
 
 	string = f'{key} {current_key}'.split()
