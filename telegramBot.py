@@ -1,68 +1,10 @@
 from functions import generate_primary_key
+from db_functions import set_values_in_db, get_values_from_db, update_values_in_db
 from datetime import datetime
-import telebot
 from telebot import types
-import sqlite3
+import telebot
 import keyboard
 import colorama
-
-
-def set_values_in_db(nickname: str, email: str, password: str, repeat_password: str, primary_key: str, avatar='Circle_Davys-Grey_Solid.svg.png') -> int:
-	with sqlite3.connect('database.db') as connect:
-		cursor = connect.cursor()
-
-		db_request = f"""INSERT INTO users
-			(user_nickname, user_email, user_password, user_repeat_password,
-			user_description, user_avatar, user_first_name, user_last_name, 
-			user_phone_number, user_github_link, user_primary_key, 
-			user_incoming_invitations, user_sent_invitations, user_friends_list, date)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
-
-		clear = ""
-		empty = 'empty'
-		date = datetime.utcnow()
-
-		data_tuple = (nickname, email, password, repeat_password, clear, avatar, 
-					clear, clear, clear, clear, primary_key, empty, empty, empty, date)
-
-
-		cursor.execute(db_request, data_tuple)
-		connect.commit()
-
-		return 1 	# Function worked
-
-	return 0 	# Error
-
-
-def get_values_from_db(mode='partial'):
-	with sqlite3.connect('database.db') as connect:
-		cursor = connect.cursor()
-
-		if mode == 'partial':
-			cursor.execute("SELECT user_nickname, user_email, user_primary_key FROM users")
-
-			data = cursor.fetchall()
-
-			output, nicknames, emails, keys = [], [], [], []
-
-			for i in data:
-				nicknames.append(i[0])
-				emails.append(i[1])
-				keys.append(i[2])
-
-			output.append(nicknames)
-			output.append(emails)
-			output.append(keys)
-
-			return output
-
-		elif mode == 'full':
-			cursor.execute("""SELECT user_nickname, user_email, user_password, user_first_name, user_last_name,
-							user_description, user_avatar, user_phone_number FROM users""")
-
-			data = cursor.fetchall()
-
-			return data
 
 
 def main():
@@ -91,9 +33,11 @@ def main():
 
 	main.login_nick_flag = False
 	main.login_password_flag = False
+	main.change_nickname_flag = False
 
 	main.user_data = []
 	main.user_login_data = []
+	main.current_logged_user_key = ''
 
 
 	@bot.message_handler(commands=['start'])
@@ -238,25 +182,69 @@ def main():
 
 			main.login_flag = False
 			main.full_login_flag = False
-			bot.send_message(message.chat.id, f'You are logged, {current_user[0]}')
+			main.current_logged_user_key = current_user[-1] 	# Index -1 it's always primary key
+			bot.send_message(message.chat.id, text=f'You are logged, {current_user[0]}', reply_markup=info_markup)
+
+
+		# Change something
+		# ---------------
+		# Change nickname
+		if main.change_nickname_flag:
+			new_names = message.text.split()
+
+			if len(new_names) != 2:
+				bot.send_message(message.chat.id, text='Wrong input, repeat please', reply_markup=markup)
+				return
+
+			update_values_in_db('user_first_name', new_names[0], main.current_logged_user_key)
+			update_values_in_db('user_last_name', new_names[1], main.current_logged_user_key)
+
+			main.change_nickname_flag = False
+
+			bot.send_message(message.chat.id, text=f'Your first name is {new_names[0]}, last name is {new_names[1]}')
 
 
 	@bot.callback_query_handler(func=lambda call: True)
 	def callback(call):
 		if call.message:
-			# Exit to sign-up
+			markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+			button1 = types.KeyboardButton('Log-in')
+			button2 = types.KeyboardButton('Sign-up')
+			markup.add(button1, button2)
+
+			data = get_values_from_db(mode='full')
+
+			# Searching user data
+			for i in data:
+				if i[-1] == main.current_logged_user_key:
+					current_user = i
+					break
+			else:
+				bot.send_message(call.message.chat.id, 'User not found')
+			# Exit from all
 			if call.data == 'exit':
+				# Sign-up flags
 				main.nickname_flag = False
 				main.email_flag = False
 				main.password_flag = False
 				main.repeatpassword_flag = False
+				main.flag = False
+				main.user_data = []
 
+				# Log-in flags
 				main.login_nick_flag = False
 				main.login_password_flag = False
+				main.full_login_flag = False
+				main.user_login_data = []
+				main.current_logged_user_key = ''
+
+				# Change data
+				main.change_nickname_flag = False
+
 				bot.send_message(call.message.chat.id, 'Exit')
 			# Add information
 			if call.data == 'add_info':
-				info_markup = types.InlineKeyboardMarkup(row_width=3)
+				info_markup = types.InlineKeyboardMarkup(row_width=2)
 				edit_names = types.InlineKeyboardButton('Edit names', callback_data='edit_names')
 				edit_nickname = types.InlineKeyboardButton('Edit nickname', callback_data='edit_nickname')
 				edit_email = types.InlineKeyboardButton('Edit email', callback_data='edit_email')
@@ -265,7 +253,12 @@ def main():
 				edit_avatar = types.InlineKeyboardButton('Edit avatar', callback_data='edit_avatar')
 				info_markup.add(edit_names, edit_nickname, edit_email, edit_phone, edit_description, edit_avatar)
 
-				bot.send_message(message.chat.id, text='What do you want to edit?', reply_markup=info_markup)
+				bot.send_message(call.message.chat.id, text='What do you want to edit?', reply_markup=info_markup)
+			# Change names
+			if call.data == 'edit_names':
+				main.change_nickname_flag = True
+				bot.send_message(call.message.chat.id, text=f'Your first name is {current_user[3]}\n Your last name is {current_user[4]}')
+				bot.send_message(call.message.chat.id, text='Enter your first name and last name separated by a space', reply_markup=markup)
 
 
 	bot.polling(none_stop=True)
