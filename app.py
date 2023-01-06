@@ -97,7 +97,6 @@ def sign_up():
 			list_emails.append(i.user_email)
 			list_primary_keys.append(i.user_primary_key)
 
-
 		info_nickname = f'Nickname {this_user_nickname} already is use'
 		info_email = f'Email {user_email} already registered'
 		info_password = "Passwords don't equals"
