@@ -164,10 +164,10 @@ def user(user, primary_key, key):
 	if request.method == 'GET':
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Поиск текущего пользователя по его уникальному ключу
+		data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	# Считывание текущего ключа
+			current_key = file.read() 	# Reading the current key
 
 		string = f'{current_key} {key}'.split()
 

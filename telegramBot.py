@@ -33,7 +33,12 @@ def main():
 
 	main.login_nick_flag = False
 	main.login_password_flag = False
+	main.change_names_flag = False
 	main.change_nickname_flag = False
+	main.change_email_flag = False
+	main.change_phone_flag = False
+	main.change_description_flag = False
+	main.change_avatar_flag = False
 
 	main.user_data = []
 	main.user_login_data = []
@@ -183,13 +188,13 @@ def main():
 			main.login_flag = False
 			main.full_login_flag = False
 			main.current_logged_user_key = current_user[-1] 	# Index -1 it's always primary key
-			bot.send_message(message.chat.id, text=f'You are logged, {current_user[0]}', reply_markup=info_markup)
+			bot.send_message(message.chat.id, text=f'You are logged, {current_user[0]}')
 
 
 		# Change something
 		# ---------------
-		# Change nickname
-		if main.change_nickname_flag:
+		# Change first name and last name
+		if main.change_names_flag:
 			new_names = message.text.split()
 
 			if len(new_names) != 2:
@@ -199,9 +204,54 @@ def main():
 			update_values_in_db('user_first_name', new_names[0], main.current_logged_user_key)
 			update_values_in_db('user_last_name', new_names[1], main.current_logged_user_key)
 
-			main.change_nickname_flag = False
+			main.change_names_flag = False
 
 			bot.send_message(message.chat.id, text=f'Your first name is {new_names[0]}, last name is {new_names[1]}')
+		# Change nickname
+		elif main.change_nickname_flag:
+			new_nickname = message.text.strip()
+
+			update_values_in_db('user_nickname', new_nickname, main.current_logged_user_key)
+
+			main.change_nickname_flag = False
+
+			bot.send_message(message.chat.id, text=f'Success, your new nickname is {new_nickname}')
+		# Change email
+		elif main.change_email_flag:
+			new_email = message.text.strip()
+
+			update_values_in_db('user_email', new_email, main.current_logged_user_key)
+
+			main.change_email_flag = False
+
+			bot.send_message(message.chat.id, text=f'Success, your new email is {new_email}')
+		# Change phone number
+		elif main.change_phone_flag:
+			new_phone_number = message.text.strip()
+
+			update_values_in_db('user_phone_number', new_phone_number, main.current_logged_user_key)
+
+			main.change_phone_flag = False
+
+			bot.send_message(message.chat.id, text=f'Success, your new phone number is {new_phone_number}')
+		# Change description
+		elif main.change_description_flag:
+			new_description = message.text.strip()
+
+			update_values_in_db('user_description', new_description, main.current_logged_user_key)
+
+			main.change_description_flag = False
+
+			bot.send_message(message.chat.id, text=f'Success, your new description is {new_description}')
+
+
+	@bot.message_handler(content_types=['photo'])
+	def change_avatar(message):
+		# if main.change_avatar_flag:
+		file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
+		downloaded_file = bot.download_file(file_info.file_path)
+
+		bot.send_message(message.chat.id, 'Success!')
 
 
 	@bot.callback_query_handler(func=lambda call: True)
@@ -239,7 +289,14 @@ def main():
 				main.current_logged_user_key = ''
 
 				# Change data
+				main.login_nick_flag = False
+				main.login_password_flag = False
+				main.change_names_flag = False
 				main.change_nickname_flag = False
+				main.change_email_flag = False
+				main.change_phone_flag = False
+				main.change_description_flag = False
+				main.change_avatar_flag = False
 
 				bot.send_message(call.message.chat.id, 'Exit')
 			# Add information
@@ -256,9 +313,33 @@ def main():
 				bot.send_message(call.message.chat.id, text='What do you want to edit?', reply_markup=info_markup)
 			# Change names
 			if call.data == 'edit_names':
-				main.change_nickname_flag = True
+				main.change_names_flag = True
 				bot.send_message(call.message.chat.id, text=f'Your first name is {current_user[3]}\n Your last name is {current_user[4]}')
 				bot.send_message(call.message.chat.id, text='Enter your first name and last name separated by a space', reply_markup=markup)
+			# Change nickname
+			if call.data == 'edit_nickname':
+				main.change_nickname_flag = True
+				bot.send_message(call.message.chat.id, text=f'Your current nickname is {current_user[0]}')
+				bot.send_message(call.message.chat.id, text='Enter your new nickname', reply_markup=markup)
+			# Change email
+			if call.data == 'edit_email':
+				main.change_email_flag = True
+				bot.send_message(call.message.chat.id, text=f'Your current email is {current_user[1]}')
+				bot.send_message(call.message.chat.id, text='Enter your new email', reply_markup=markup)
+			# Change phone number
+			if call.data == 'edit_phone':
+				main.change_phone_flag = True
+				bot.send_message(call.message.chat.id, text=f'Your current phone number is {current_user[7]}')
+				bot.send_message(call.message.chat.id, text='Enter your new phone number', reply_markup=markup)
+			# Change description
+			if call.data == 'edit_description':
+				main.change_phone_flag = True
+				bot.send_message(call.message.chat.id, text=f'Your current description is {current_user[5]}')
+				bot.send_message(call.message.chat.id, text='Enter your new description', reply_markup=markup)
+			# Change avatar
+			if call.data == 'edit_avatar':
+				main.change_avatar_flag = True
+				bot.send_message(call.message.chat.id, text='Send your new avatar', reply_markup=markup)
 
 
 	bot.polling(none_stop=True)
