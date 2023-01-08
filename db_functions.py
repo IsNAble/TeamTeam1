@@ -52,7 +52,7 @@ def get_values_from_db(mode='partial'):
 
 		elif mode == 'full':
 			cursor.execute("""SELECT user_nickname, user_email, user_password, user_first_name, user_last_name,
-							user_description, user_avatar, user_phone_number, user_primary_key FROM users""")
+							user_description, user_avatar, user_phone_number, user_id, user_primary_key FROM users""")
 
 			data = cursor.fetchall()
 

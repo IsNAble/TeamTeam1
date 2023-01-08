@@ -188,7 +188,7 @@ def main():
 			main.login_flag = False
 			main.full_login_flag = False
 			main.current_logged_user_key = current_user[-1] 	# Index -1 it's always primary key
-			bot.send_message(message.chat.id, text=f'You are logged, {current_user[0]}')
+			bot.send_message(message.chat.id, text=f'You are logged, {current_user[0]}', reply_markup=info_markup)
 
 
 		# Change something
@@ -247,11 +247,26 @@ def main():
 
 	@bot.message_handler(content_types=['photo'])
 	def change_avatar(message):
-		# if main.change_avatar_flag:
-		file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
-		downloaded_file = bot.download_file(file_info.file_path)
+		if main.change_avatar_flag:
+			# Searching user data
+			data = get_values_from_db('full')
 
-		bot.send_message(message.chat.id, 'Success!')
+			for i in data:
+				if i[-1] == main.current_logged_user_key:
+					current_user = i
+					break
+			else:
+				bot.send_message(message.chat.id, 'User not found')
+			# Get photo info
+			file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
+			downloaded_file = bot.download_file(file_info.file_path)
+			# Save photo
+			with open(f'static/img/{current_user[0]}{current_user[-2]}{file_info.file_path[7:]}', 'wb') as img:
+				img.write(downloaded_file)
+
+			update_values_in_db('user_avatar', f'{current_user[0]}{current_user[-2]}{file_info.file_path[7:]}', main.current_logged_user_key)
+
+			bot.send_message(message.chat.id, 'Success, you change your avatar')
 
 
 	@bot.callback_query_handler(func=lambda call: True)
