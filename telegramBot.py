@@ -1,5 +1,5 @@
 from functions import generate_primary_key
-from db_functions import set_values_in_db, get_values_from_db, update_values_in_db
+from db_functions import set_values_in_db, get_values_from_db, update_values_in_db, set_values_in_telegram_db, get_values_in_telegram_db, update_values_in_telegram_db
 from datetime import datetime
 from telebot import types
 import telebot
@@ -46,7 +46,6 @@ def main():
 
 
 	@bot.message_handler(commands=['start'])
-	@bot.message_handler(commands=['info'])
 	def buttons(message):
 		markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 		button1 = types.KeyboardButton('Log-in')
@@ -68,6 +67,15 @@ def main():
 		info_markup.add(info_button)
 
 		db_data = get_values_from_db()
+
+		data = get_values_in_telegram_db()
+
+		for i in range(len(data[0])):
+			if data[0][i] == message.from_user.username:
+				current_user_key = data[1][i]
+				break
+		else:
+			current_user_key = ''
 
 		# Sign-up case
 		if message.text == 'Sign-up' and not main.login_flag:
@@ -188,6 +196,15 @@ def main():
 			main.login_flag = False
 			main.full_login_flag = False
 			main.current_logged_user_key = current_user[-1] 	# Index -1 it's always primary key
+
+			# update_values_in_telegram_db(message.from_user.username, current_user[-1])
+			data_tuple = get_values_in_telegram_db()
+
+			if message.from_user.username in data_tuple[0]:
+				update_values_in_telegram_db(message.from_user.username, current_user[-1])
+			else:
+				set_values_in_telegram_db(message.from_user.username, current_user[-1])
+
 			bot.send_message(message.chat.id, text=f'You are logged, {current_user[0]}', reply_markup=info_markup)
 
 
@@ -201,8 +218,8 @@ def main():
 				bot.send_message(message.chat.id, text='Wrong input, repeat please', reply_markup=markup)
 				return
 
-			update_values_in_db('user_first_name', new_names[0], main.current_logged_user_key)
-			update_values_in_db('user_last_name', new_names[1], main.current_logged_user_key)
+			update_values_in_db('user_first_name', new_names[0], current_user_key)
+			update_values_in_db('user_last_name', new_names[1], current_user_key)
 
 			main.change_names_flag = False
 
@@ -211,7 +228,7 @@ def main():
 		elif main.change_nickname_flag:
 			new_nickname = message.text.strip()
 
-			update_values_in_db('user_nickname', new_nickname, main.current_logged_user_key)
+			update_values_in_db('user_nickname', new_nickname, current_user_key)
 
 			main.change_nickname_flag = False
 
@@ -220,7 +237,7 @@ def main():
 		elif main.change_email_flag:
 			new_email = message.text.strip()
 
-			update_values_in_db('user_email', new_email, main.current_logged_user_key)
+			update_values_in_db('user_email', new_email, current_user_key)
 
 			main.change_email_flag = False
 
@@ -229,7 +246,7 @@ def main():
 		elif main.change_phone_flag:
 			new_phone_number = message.text.strip()
 
-			update_values_in_db('user_phone_number', new_phone_number, main.current_logged_user_key)
+			update_values_in_db('user_phone_number', new_phone_number, current_user_key)
 
 			main.change_phone_flag = False
 
@@ -238,7 +255,7 @@ def main():
 		elif main.change_description_flag:
 			new_description = message.text.strip()
 
-			update_values_in_db('user_description', new_description, main.current_logged_user_key)
+			update_values_in_db('user_description', new_description, current_user_key)
 
 			main.change_description_flag = False
 
@@ -252,7 +269,7 @@ def main():
 			data = get_values_from_db('full')
 
 			for i in data:
-				if i[-1] == main.current_logged_user_key:
+				if i[-1] == current_user_key:
 					current_user = i
 					break
 			else:
@@ -264,7 +281,7 @@ def main():
 			with open(f'static/img/{current_user[0]}{current_user[-2]}{file_info.file_path[7:]}', 'wb') as img:
 				img.write(downloaded_file)
 
-			update_values_in_db('user_avatar', f'{current_user[0]}{current_user[-2]}{file_info.file_path[7:]}', main.current_logged_user_key)
+			update_values_in_db('user_avatar', f'{current_user[0]}{current_user[-2]}{file_info.file_path[7:]}', current_user_key)
 
 			bot.send_message(message.chat.id, 'Success, you change your avatar')
 

@@ -1,6 +1,53 @@
 import sqlite3
 
 
+def create_db_for_bot():
+	with sqlite3.connect('telegram_user.db') as connect:
+		cursor = connect.cursor()
+
+		cursor.execute("""CREATE TABLE IF NOT EXISTS Login_data
+						(Telegram_username TEXT DEFAULT '', Last_logged_user_key TEXT DEFAULT '')""")
+
+		print('Success, db is created!')
+
+
+def set_values_in_telegram_db(username: str, primary_key: str) -> None:
+	with sqlite3.connect('telegram_user.db') as connect:
+		cursor = connect.cursor()
+
+		data_tuple = (username, primary_key)
+
+		cursor.execute("""INSERT INTO Login_data 
+						(Telegram_username, Last_logged_user_key)
+						VALUES (?, ?);""", data_tuple)
+
+
+def update_values_in_telegram_db(username: str, primary_key) -> None:
+	with sqlite3.connect('telegram_user.db') as connect:
+		cursor = connect.cursor()
+
+		data_tuple = (primary_key, username)
+
+		cursor.execute("""UPDATE Login_data SET Last_logged_user_key = ? WHERE Telegram_username = ?""", data_tuple)
+
+
+def get_values_in_telegram_db() -> list:
+	with sqlite3.connect('telegram_user.db') as connect:
+		cursor = connect.cursor()
+
+		cursor.execute("""SELECT * FROM Login_data""")
+
+		data = cursor.fetchall()
+
+		usernames, keys = [], []
+
+		for i in data:
+			usernames.append(i[0])
+			keys.append(i[1])
+
+		return usernames, keys
+
+
 def set_values_in_db(nickname: str, email: str, password: str, repeat_password: str, primary_key: str, avatar='Circle_Davys-Grey_Solid.svg.png') -> int:
 	with sqlite3.connect('database.db') as connect:
 		cursor = connect.cursor()
@@ -37,18 +84,14 @@ def get_values_from_db(mode='partial'):
 
 			data = cursor.fetchall()
 
-			output, nicknames, emails, keys = [], [], [], []
+			nicknames, emails, keys = [], [], []
 
 			for i in data:
 				nicknames.append(i[0])
 				emails.append(i[1])
 				keys.append(i[2])
 
-			output.append(nicknames)
-			output.append(emails)
-			output.append(keys)
-
-			return output
+			return nicknames, emails, keys
 
 		elif mode == 'full':
 			cursor.execute("""SELECT user_nickname, user_email, user_password, user_first_name, user_last_name,
