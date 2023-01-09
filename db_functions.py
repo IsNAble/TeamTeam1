@@ -31,7 +31,7 @@ def update_values_in_telegram_db(username: str, primary_key) -> None:
 		cursor.execute("""UPDATE Login_data SET Last_logged_user_key = ? WHERE Telegram_username = ?""", data_tuple)
 
 
-def get_values_in_telegram_db() -> list:
+def get_values_from_telegram_db() -> list:
 	with sqlite3.connect('telegram_user.db') as connect:
 		cursor = connect.cursor()
 

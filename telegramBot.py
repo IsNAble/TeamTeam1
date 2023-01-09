@@ -1,5 +1,5 @@
 from functions import generate_primary_key
-from db_functions import set_values_in_db, get_values_from_db, update_values_in_db, set_values_in_telegram_db, get_values_in_telegram_db, update_values_in_telegram_db
+from db_functions import set_values_in_db, get_values_from_db, update_values_in_db, set_values_in_telegram_db, get_values_from_telegram_db, update_values_in_telegram_db
 from datetime import datetime
 from telebot import types
 import telebot
@@ -55,6 +55,20 @@ def main():
 		bot.send_message(message.chat.id, text='Text', reply_markup=markup)
 
 
+	@bot.message_handler(commands=['change'])
+	def change_settings(message):
+		info_markup = types.InlineKeyboardMarkup(row_width=2)
+		edit_names = types.InlineKeyboardButton('Edit names', callback_data='edit_names')
+		edit_nickname = types.InlineKeyboardButton('Edit nickname', callback_data='edit_nickname')
+		edit_email = types.InlineKeyboardButton('Edit email', callback_data='edit_email')
+		edit_phone = types.InlineKeyboardButton('Edit phone number', callback_data='edit_phone')
+		edit_description = types.InlineKeyboardButton('Edit description', callback_data='edit_description')
+		edit_avatar = types.InlineKeyboardButton('Edit avatar', callback_data='edit_avatar')
+		info_markup.add(edit_names, edit_nickname, edit_email, edit_phone, edit_description, edit_avatar)
+
+		bot.send_message(message.chat.id, text='What do you want to edit?', reply_markup=info_markup)
+
+
 	# Sign-up and log-in
 	@bot.message_handler(content_types=['text'])
 	def send_text(message):
@@ -68,7 +82,7 @@ def main():
 
 		db_data = get_values_from_db()
 
-		data = get_values_in_telegram_db()
+		data = get_values_from_telegram_db()
 
 		for i in range(len(data[0])):
 			if data[0][i] == message.from_user.username:
@@ -198,7 +212,7 @@ def main():
 			main.current_logged_user_key = current_user[-1] 	# Index -1 it's always primary key
 
 			# update_values_in_telegram_db(message.from_user.username, current_user[-1])
-			data_tuple = get_values_in_telegram_db()
+			data_tuple = get_values_from_telegram_db()
 
 			if message.from_user.username in data_tuple[0]:
 				update_values_in_telegram_db(message.from_user.username, current_user[-1])
@@ -294,15 +308,6 @@ def main():
 			button2 = types.KeyboardButton('Sign-up')
 			markup.add(button1, button2)
 
-			data = get_values_from_db(mode='full')
-
-			# Searching user data
-			for i in data:
-				if i[-1] == main.current_logged_user_key:
-					current_user = i
-					break
-			else:
-				bot.send_message(call.message.chat.id, 'User not found')
 			# Exit from all
 			if call.data == 'exit':
 				# Sign-up flags
@@ -346,27 +351,22 @@ def main():
 			# Change names
 			if call.data == 'edit_names':
 				main.change_names_flag = True
-				bot.send_message(call.message.chat.id, text=f'Your first name is {current_user[3]}\n Your last name is {current_user[4]}')
 				bot.send_message(call.message.chat.id, text='Enter your first name and last name separated by a space', reply_markup=markup)
 			# Change nickname
 			if call.data == 'edit_nickname':
 				main.change_nickname_flag = True
-				bot.send_message(call.message.chat.id, text=f'Your current nickname is {current_user[0]}')
 				bot.send_message(call.message.chat.id, text='Enter your new nickname', reply_markup=markup)
 			# Change email
 			if call.data == 'edit_email':
 				main.change_email_flag = True
-				bot.send_message(call.message.chat.id, text=f'Your current email is {current_user[1]}')
 				bot.send_message(call.message.chat.id, text='Enter your new email', reply_markup=markup)
 			# Change phone number
 			if call.data == 'edit_phone':
 				main.change_phone_flag = True
-				bot.send_message(call.message.chat.id, text=f'Your current phone number is {current_user[7]}')
 				bot.send_message(call.message.chat.id, text='Enter your new phone number', reply_markup=markup)
 			# Change description
 			if call.data == 'edit_description':
 				main.change_phone_flag = True
-				bot.send_message(call.message.chat.id, text=f'Your current description is {current_user[5]}')
 				bot.send_message(call.message.chat.id, text='Enter your new description', reply_markup=markup)
 			# Change avatar
 			if call.data == 'edit_avatar':
