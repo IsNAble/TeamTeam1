@@ -375,7 +375,7 @@ def main():
 				bot.send_message(call.message.chat.id, text='Enter your new phone number', reply_markup=markup)
 			# Change description
 			if call.data == 'edit_description':
-				main.change_phone_flag = True
+				main.change_description_flag = True
 				bot.send_message(call.message.chat.id, text='Enter your new description', reply_markup=markup)
 			# Change avatar
 			if call.data == 'edit_avatar':
