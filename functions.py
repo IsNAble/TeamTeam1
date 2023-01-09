@@ -77,7 +77,7 @@ def generate_admin_key(filename: str, length=6) -> None:
 			file.write(f'{current_key}\ncount: {count}') 	# Writing a new key
 
 	except FileNotFoundError:
-		return 'Файла не существует'
+		return 'File not exists'
 
 
 def generate_users_key(filename: str, length=8):
@@ -92,7 +92,7 @@ def generate_users_key(filename: str, length=8):
 			file.write(current_key)
 
 	except FileNotFoundError:
-		return 'Файла не существует'
+		return 'File not exists'
 
 
 def github_api(nickname: str):

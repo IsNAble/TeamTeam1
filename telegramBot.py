@@ -282,6 +282,15 @@ def main():
 			# Searching user data
 			data = get_values_from_db('full')
 
+			tg_data = get_values_from_telegram_db()
+
+			for i in range(len(tg_data[0])):
+				if tg_data[0][i] == message.from_user.username:
+					current_user_key = tg_data[1][i]
+					break
+			else:
+				current_user_key = ''
+
 			for i in data:
 				if i[-1] == current_user_key:
 					current_user = i
