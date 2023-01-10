@@ -42,7 +42,6 @@ def main():
 
 	main.user_data = []
 	main.user_login_data = []
-	main.current_logged_user_key = ''
 
 
 	@bot.message_handler(commands=['start'])
@@ -173,6 +172,15 @@ def main():
 			else:
 				bot.send_message(message.chat.id, 'Error db')
 
+			data = get_values_from_db(mode='full')
+
+			data_tuple = get_values_from_telegram_db()
+			# Save last logged user data
+			if message.from_user.username in data_tuple[0]:
+				update_values_in_telegram_db(message.from_user.username, primary_key)
+			else:
+				set_values_in_telegram_db(message.from_user.username, primary_key)
+
 			main.flag = False
 			main.sign_flag = False
 
@@ -211,7 +219,6 @@ def main():
 			main.full_login_flag = False
 			main.current_logged_user_key = current_user[-1] 	# Index -1 it's always primary key
 
-			# update_values_in_telegram_db(message.from_user.username, current_user[-1])
 			data_tuple = get_values_from_telegram_db()
 
 			if message.from_user.username in data_tuple[0]:
@@ -332,7 +339,6 @@ def main():
 				main.login_password_flag = False
 				main.full_login_flag = False
 				main.user_login_data = []
-				main.current_logged_user_key = ''
 
 				# Change data
 				main.login_nick_flag = False
