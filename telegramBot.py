@@ -68,6 +68,17 @@ def main():
 		bot.send_message(message.chat.id, text='What do you want to edit?', reply_markup=info_markup)
 
 
+	@bot.message_handler(commands=['out'])
+	def sign_out(message):
+		usernames, keys = get_values_from_telegram_db()
+
+		if message.from_user.username not in usernames:
+			bot.send_message(message.chat.id, 'You are not logged')
+			return
+
+		update_values_in_telegram_db(message.from_user.username, 'out')
+
+
 	# Sign-up and log-in
 	@bot.message_handler(content_types=['text'])
 	def send_text(message):
@@ -88,7 +99,7 @@ def main():
 				current_user_key = data[1][i]
 				break
 		else:
-			current_user_key = ''
+			current_user_key = 'out'
 
 		# Sign-up case
 		if message.text == 'Sign-up' and not main.login_flag:
@@ -239,6 +250,10 @@ def main():
 				bot.send_message(message.chat.id, text='Wrong input, repeat please', reply_markup=markup)
 				return
 
+			if current_user_key == 'out':
+				bot.send_message(message.chat.id, text='You are not logged!')
+				return
+
 			update_values_in_db('user_first_name', new_names[0], current_user_key)
 			update_values_in_db('user_last_name', new_names[1], current_user_key)
 
@@ -249,6 +264,10 @@ def main():
 		elif main.change_nickname_flag:
 			new_nickname = message.text.strip()
 
+			if current_user_key == 'out':
+				bot.send_message(message.chat.id, text='You are not logged!')
+				return
+
 			update_values_in_db('user_nickname', new_nickname, current_user_key)
 
 			main.change_nickname_flag = False
@@ -257,6 +276,10 @@ def main():
 		# Change email
 		elif main.change_email_flag:
 			new_email = message.text.strip()
+
+			if current_user_key == 'out':
+				bot.send_message(message.chat.id, text='You are not logged!')
+				return
 
 			update_values_in_db('user_email', new_email, current_user_key)
 
@@ -267,6 +290,10 @@ def main():
 		elif main.change_phone_flag:
 			new_phone_number = message.text.strip()
 
+			if current_user_key == 'out':
+				bot.send_message(message.chat.id, text='You are not logged!')
+				return
+
 			update_values_in_db('user_phone_number', new_phone_number, current_user_key)
 
 			main.change_phone_flag = False
@@ -275,6 +302,10 @@ def main():
 		# Change description
 		elif main.change_description_flag:
 			new_description = message.text.strip()
+
+			if current_user_key == 'out':
+				bot.send_message(message.chat.id, text='You are not logged!')
+				return
 
 			update_values_in_db('user_description', new_description, current_user_key)
 
@@ -296,7 +327,11 @@ def main():
 					current_user_key = tg_data[1][i]
 					break
 			else:
-				current_user_key = ''
+				current_user_key = 'out'
+
+			if current_user_key == 'out':
+				bot.send_message(message.chat.id, text='You are not logged!')
+				return
 
 			for i in data:
 				if i[-1] == current_user_key:
@@ -319,6 +354,19 @@ def main():
 	@bot.callback_query_handler(func=lambda call: True)
 	def callback(call):
 		if call.message:
+			tg_data = get_values_from_telegram_db()
+
+			for i in range(len(tg_data[0])):
+				if tg_data[0][i] == call.message.from_user.username:
+					current_user_key = tg_data[1][i]
+					break
+			else:
+				current_user_key = 'out'
+
+			if current_user_key == 'out':
+				bot.send_message(call.message.chat.id, text='You are not logged!')
+				return
+
 			markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 			button1 = types.KeyboardButton('Log-in')
 			button2 = types.KeyboardButton('Sign-up')
