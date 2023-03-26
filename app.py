@@ -48,7 +48,6 @@ def main_page():
 
 	if data:
 		response = make_response(render_template("homelogin.html", data=data))
-		# response.set_cookie("logged_username", "", 0)
 
 		return response
 
@@ -87,15 +86,14 @@ def login_page():
 				response = make_response(redirect("/home"))
 				response.set_cookie("logged_username", i.user_nickname, to_seconds(30))
 
-				# return redirect(f'/home/{i.user_nickname}/{i.user_primary_key}={current_key}')
 				return response
 
 		alert = 'Incorrect login or password'
 		return render_template('log-in.html', alert=alert)
 
 	elif request.method == 'GET':
-		if request.cookies.get("logged_username"):
-			return redirect("/home")
+		# if request.cookies.get("logged_username"):
+		# 	return redirect("/home")
 
 		return render_template('log-in.html')
 
@@ -164,13 +162,6 @@ def sign_up():
 
 		return response
 
-		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		# 	current_key = file.read()	# Reading the current key
-		#
-		# for i in table:		# Search for the current user in the database by nickname
-		# 	if i.user_nickname == this_user_nickname:
-		# 		return redirect(f'/home/{i.user_nickname}/{i.user_primary_key}={current_key}')
-
 	elif request.method == 'GET':
 		result = ['', '', '']
 		return render_template('sign-up.html', result=result)
@@ -191,62 +182,10 @@ def users_list(key):
 	else:
 		return '404 NOT FOUND'
 
-
-# @application.route('/home/<string:user>/<string:primary_key>=<string:key>', methods=['POST', 'GET'])
-# def user(user, primary_key, key):
-# 	if request.method == 'GET':
-# 		table = Users.query.all()
-#
-# 		data = found_user(table, primary_key) 	# Search for the current user by his unique key
-#
-# 		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-# 			current_key = file.read() 	# Reading the current key
-#
-# 		string = f'{current_key} {key}'.split()
-#
-# 		if data.user_incoming_invitations in ('empty', ''):
-# 			notifications = ""
-# 		else:
-# 			notifications = '!'
-#
-# 		if data is not None and data.user_nickname == user and string[0] == string[1]:
-# 			return render_template('homelogin.html', data=data, current_key=current_key, notifications=notifications)
-# 		else:
-# 			return 'User not found'
-# 	elif request.method == 'POST':
-# 		nickname_with_key = request.form['search-bar']		# Getting a nickname and id of a user from a search
-#
-# 		table = Users.query.all()
-#
-# 		data = found_user(table, primary_key) 	# Search for the current user by his unique key
-#
-# 		if '#' not in nickname_with_key:
-# 			with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-# 				current_key = file.read() 	# Reading the current key
-#
-# 			alert = 'Incorrect search'
-# 			return render_template('homelogin.html', data=data, current_key=current_key, alert=alert)
-#
-# 		nickname_with_key = nickname_with_key.split('#')
-#
-# 		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-# 			current_key = file.read() 	# Reading the current key
-#
-# 		table = Users.query.all()
-#
-# 		for i in table:
-# 			if i.user_primary_key == nickname_with_key[1]:
-# 				return redirect(f'/public-profile/{nickname_with_key[0]}/{primary_key}-{nickname_with_key[1]}={current_key}')
-# 		else:
-# 			alert = 'This user does not exist'
-# 			return render_template('homelogin.html', data=data, current_key=current_key, alert=alert)
-
-
 @application.route('/profile')
 def profile():
 	table = Users.query.all()
 
-	# data = found_user(table, primary_key) 	# Search for the current user by his unique key
 	cookie_value = ""
 
 	# Get username from cookie
@@ -322,8 +261,6 @@ def edit_profile():
 		flag = True 
 		table = Users.query.all()
 
-		# current_user = found_user(table, primary_key) 	# Search for the current user by his unique key
-
 		cookie_value = ""
 
 		# Get username from cookie
@@ -361,8 +298,8 @@ def edit_profile():
 			flag = False
 
 		if flag:
-			user_avatar_path = 'static/img/' + user + str(current_user.user_id) + file.filename
-			filename = user + str(current_user.user_id) + file.filename 	
+			user_avatar_path = 'static/img/' + current_user.user_nickname + str(current_user.user_id) + file.filename
+			filename = current_user.user_nickname + str(current_user.user_id) + file.filename
 			current_user.user_avatar = filename
 
 		current_user.user_first_name = first_name 		
@@ -381,25 +318,21 @@ def edit_profile():
 		if flag:
 			list_image = os.listdir('static/img') 	# List files in img folder
 			for img in list_image:
-				if user + str(current_user.user_id) in img: 	# If this is the user's previous file
+				if current_user.user_nickname + str(current_user.user_id) in img: 	# If this is the user's previous file
 					os.remove(f'static/img/{img}') 				# then it is removed
 
 			file.save(user_avatar_path)		# Saving a picture
 
-		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		# 	current_key = file.read() 	# Reading the current key
+		# Add new username to cookie
+		response = make_response(redirect("/home"))
+		response.set_cookie("logged_username", nickname, to_seconds(30))
+
+		return response
 
 		return redirect("/home")
 
 	elif request.method == 'GET':
 		table = Users.query.all()
-
-		# data = found_user(table, primary_key) 	# Search for the current user by his unique key
-		
-		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		# 	current_key = file.read() 	# Reading the current key
-		#
-		# string = f'{current_key} {key}'.split()
 
 		cookie_value = ""
 
@@ -414,19 +347,6 @@ def edit_profile():
 			return make_response(render_template("profile/profilesetting.html", data=data))
 
 		return "Error"
-
-		# if data is not None and data.user_nickname == user and string[0] == string[1]:
-		# 	if data.user_first_name == "":
-		# 		data.user_first_name = 'No data'
-		# 	if data.user_last_name == "": 			# Setting default values
-		# 		data.user_last_name = 'No data'
-		# 	if data.user_description == "":
-		# 		data.user_description = 'No data'
-		#
-		# 	return render_template('profile/profilesetting.html', data=data, current_key=current_key)
-		#
-		# return '404 NOT FOUND'
-
 
 @application.route('/change-password/<string:user>/<string:primary_key>=<string:key>', methods=['POST', 'GET'])
 def change_password(user, primary_key, key):
@@ -583,26 +503,29 @@ def enter_code(user, primary_key, key, code):
 		return redirect(f'/new-password/{user}/{primary_key}={key}')
 
 
-@application.route('/user-friends-list=<string:primary_key>&<string:key>')
-def friend_list(primary_key, key):
-	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Reading the current key
-
-	string = f'{current_key} {key}'.split()
-
-	if string[0] != string[1]:
-		return '404 NOT FOUND'
-
+@application.route('/user-friends-list')
+def friend_list():
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Search for the current user by his unique key
+	cookie_value = ""
 
-	friends_list = data.user_friends_list.split() 	# Getting data about the user's friends
+	# Get username from cookie
+	if request.cookies.get("logged_username"):
+		cookie_value = request.cookies.get("logged_username")
+
+	# Find user
+	data = find_by_username(table, cookie_value)
+
+	# Return error if user undefined
+	if not data:
+		return "Error"
+
+	friends_list = data.user_friends_list.split()  # Getting data about the user's friends
 
 	for i in range(len(friends_list)):
-		friends_list[i] = friends_list[i].split('#') 	# Dividing each friend into a tuple (avatar, nickname, key)
+		friends_list[i] = friends_list[i].split('#')  # Dividing each friend into a tuple (avatar, nickname, key)
 
-	return render_template('friends-page.html', data=data, friends_list=friends_list, current_key=current_key)
+	return render_template('friends-page.html', data=data, friends_list=friends_list)
 
 
 @application.route('/send-invite&<string:user>-<string:primary_key>&<string:previous_user>-<string:previous_primary_key>')
