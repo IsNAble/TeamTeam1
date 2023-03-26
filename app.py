@@ -1,4 +1,4 @@
-from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key, generate_security_key, found_user, to_seconds, find_by_username
+from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key, generate_security_key, found_user, to_seconds, find_by_username, find_by_email
 from send_email_file import send_email
 from flask import Flask, request, render_template, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
@@ -391,19 +391,26 @@ def change_password(user, primary_key, key):
 		return render_template('changepass-page.html', user=user, primary_key=primary_key, key=key)
 
 
-@application.route('/new-password/<string:user>/<string:primary_key>=<string:key>', methods=['POST', 'GET'])
-def new_password(user, primary_key, key):
+@application.route('/new-password', methods=['POST', 'GET'])
+def new_password():
 	if request.method == 'GET':
 		return render_template('newpassword.html')
+
 	elif request.method == 'POST':
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Search for the current user by his unique key
+		# data = found_user(table, primary_key) 	# Search for the current user by his unique key
+		cookie_value = ""
+
+		if request.cookies.get("verify_email"):
+			cookie_value = request.cookies.get("verify_email")
+
+		data = find_by_email(table, cookie_value)
 
 		password = request.form['password']
-		repeatpassword = request.form['repeatpassword']
+		repeat_password = request.form['repeat-password']
 
-		if password.strip() != repeatpassword.strip():
+		if password.strip() != repeat_password.strip():
 			alert = 'Passwords are not equal!'
 			return render_template('newpassword.html', alert=alert)
 
@@ -412,39 +419,47 @@ def new_password(user, primary_key, key):
 			return render_template('newpassword.html', alert=alert)
 
 		data.user_password = password
-		data.user_repeat_password = repeatpassword
+		data.user_repeat_password = repeat_password
 
 		try:
 			db.session.commit()
 		except Exception as _ex:
 			return _ex
 
-		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read()
+		# Add user to cookie session
+		response = make_response(redirect("/home"))
+		response.set_cookie("logged_username", data.user_nickname, to_seconds(30))
 
-		return redirect(f'/home/{data.user_nickname}/{data.user_primary_key}={current_key}')
+		return response
 
 
-@application.route('/forgot-password/<string:user>/<string:primary_key>=<string:key>&<string:page>')
-def forgot_password(user, primary_key, key, page):
-	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Reading the current key
-
-	string = f'{current_key} {key}'.split()
-
-	if string[0] != string[1]:
-		return '404 NOT FOUND'
-
+@application.route('/forgot-password/<string:page>')
+def forgot_password(page):
+	# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
+	# 	current_key = file.read() 	# Reading the current key
+	#
+	# string = f'{current_key} {key}'.split()
+	#
+	# if string[0] != string[1]:
+	# 	return '404 NOT FOUND'
+	#
+	# table = Users.query.all()
+	#
+	# data = found_user(table, primary_key) 	# Search for the current user by his unique key
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Search for the current user by his unique key
+	# Get username from cookie
+	if request.cookies.get("verify_email"):
+		email_from_cookie = request.cookies.get("verify_email")
 
-	if page == 'l': 	# Mode when the user enters from the login page
-		link_back = '/login'
-	elif page == 'c': 	# Mode when the user enters from the password change page
-		link_back = f'/change-password/{data.user_nickname}/{data.user_primary_key}={current_key}'
+		if page == 'l': 	# Mode when the user enters from the login page
+			link_back = '/login'
+		elif page == 'c': 	# Mode when the user enters from the password change page
+			link_back = '/change-password'
 
-	return render_template('forgotpass.html', link_back=link_back, data=data, current_key=current_key)
+		return render_template('forgotpass.html', email=email_from_cookie, link_back=link_back)
+
+	return "Error"
 
 
 @application.route('/enter-login', methods=['POST', 'GET'])
@@ -468,39 +483,43 @@ def enter_login():
 			alert = 'this email is not registered'
 			return render_template('enterlogin.html', alert=alert)
 
-		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	# Reading the current key	
+		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
+		# 	current_key = file.read() 	# Reading the current key
+		response = make_response(redirect('/forgot-password/l'))
+		response.set_cookie("verify_email", email)
 
-		return redirect(f'/forgot-password/{data.user_nickname}/{data.user_primary_key}={current_key}&l')
+		return response
 
 
-@application.route('/enter-code/<string:user>/<string:primary_key>=<string:key>&<string:code>', methods=['POST', 'GET'])
-def enter_code(user, primary_key, key, code):
+@application.route('/enter-code', methods=['POST', 'GET'])
+def enter_code():
 	if request.method == 'GET':
-		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	# Reading the current key
-
-		string = f'{current_key} {key}'.split()
-
-		table = Users.query.all()
-		data = found_user(table, primary_key) 	# Search for the current user by his unique key
-
-		if string[0] != string[1]:
-			return '404 NOT FOUND'
-
-		return render_template('entercode.html', data=data)
+		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
+		# 	current_key = file.read() 	# Reading the current key
+		#
+		# string = f'{current_key} {key}'.split()
+		#
+		# table = Users.query.all()
+		# data = found_user(table, primary_key) 	# Search for the current user by his unique key
+		#
+		# if string[0] != string[1]:
+		# 	return '404 NOT FOUND'
+		return render_template('entercode.html')
 	elif request.method == 'POST':
 		user_code = request.form['security-code']
-		code_with_url = str(int(code[::-1], 2))
+		# code_from_url = str(int(code[::-1], 2))
 
-		table = Users.query.all()
-		data = found_user(table, primary_key) 	# Search for the current user by his unique key
+		if request.cookies.get("verify_code"):
+			code_from_cookie = request.cookies.get("verify_code")
 
-		if user_code.strip() != code_with_url:
-			alert = 'Wrong code'
-			return render_template('entercode.html', data=data, alert=alert)
+			# data = found_user(table, primary_key) 	# Search for the current user by his unique key
+			table = Users.query.all()
 
-		return redirect(f'/new-password/{user}/{primary_key}={key}')
+			if user_code.strip() != code_from_cookie:
+				alert = 'Wrong code'
+				return render_template('entercode.html', alert=alert)
+
+		return redirect('/new-password')
 
 
 @application.route('/user-friends-list')
@@ -607,29 +626,43 @@ def accept(avatar, user, key, primary_key):
 	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
 
 
-@application.route('/accept-send-code/<string:user>/<string:primary_key>')
-def accept_send_code(user, primary_key):
+@application.route('/accept-send-code')
+def accept_send_code():
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Search for the current user by his unique key
+	# data = found_user(table, primary_key) 	# Search for the current user by his unique key
+	cookie_value = ""
 
-	code = generate_security_key()
-	message = f'Your verify code is:\n{code}'
-	recipient = data.user_email
+	# Get username from cookie
+	if request.cookies.get("verify_email"):
+		cookie_value = request.cookies.get("verify_email")
 
-	encode = bin(int(code))[2:]
-	encode = encode[::-1]
+		# Find user
+		data = find_by_email(table, cookie_value)
 
-	response = send_email(message, recipient)
+		verify_code = generate_security_key()
+		message = f'Your verify code is:\n{verify_code}'
+		recipient = data.user_email
 
-	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Reading the current key
+		# encode = bin(int(code))[2:]
+		# encode = encode[::-1]
 
-	if response == 'Success':
-		return redirect(f'/enter-code/{data.user_nickname}/{data.user_primary_key}={current_key}&{encode}')
-	elif response == 'Email invalid':
-		alert = 'Email invalid'
-		return render_template('forgotpass.html', alert=alert)
+		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
+		# 	current_key = file.read() 	# Reading the current key
+
+		output = send_email(message, recipient)
+
+		if output == 'Success':
+			response = make_response(redirect('/enter-code'))
+			response.set_cookie("verify_code")
+
+			return response
+			# return redirect(f'/enter-code/{data.user_nickname}/{data.user_primary_key}={current_key}&{encode}')
+		elif output == 'Email invalid':
+			alert = 'Email invalid'
+			return render_template('forgotpass.html', alert=alert)
+
+	return "Error"
 
 
 @application.route('/decline/<string:avatar>&<string:user>&<string:key>=<string:primary_key>')

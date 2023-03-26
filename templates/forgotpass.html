@@ -16,11 +16,11 @@
       <div class="wrapper">
         <div class="changepass">
           <h1> Send code to email address:</h1>
-          <article>{{ data.user_email }}</article>
+          <article>{{ email }}</article>
           <label>{{ alert }}</label>
           <div class="button">
             <a href="{{ link_back }}">Decline</a>
-            <a href="/accept-send-code/{{ data.user_nickname }}/{{ data.user_primary_key }}">Accept</a>
+            <a href="/accept-send-code">Accept</a>
           </div>
         </div>
       </div>

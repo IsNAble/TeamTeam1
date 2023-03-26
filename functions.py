@@ -21,6 +21,13 @@ def find_by_username(table, username: str):
 	else:
 		return False
 
+def find_by_email(table, email: str):
+	for i in table:
+		if i.user_email == email:
+			return i
+	else:
+		return False
+
 def check_password(password: str) -> bool:
 	upper = False 		# Check uppercase
 	lower = False 		# Check lowercase
