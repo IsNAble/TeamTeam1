@@ -1,6 +1,6 @@
-from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key, generate_security_key, found_user
-from send_email import send_email
-from flask import Flask, request, render_template, redirect, url_for
+from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key, generate_security_key, found_user, to_seconds, find_by_username
+from send_email_file import send_email
+from flask import Flask, request, render_template, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -37,7 +37,29 @@ class Users(db.Model):
 @application.route('/')
 @application.route('/home')
 def main_page():
+	cookie_value = ""
+
+	if (request.cookies.get("logged_username")):
+		cookie_value = request.cookies.get("logged_username")
+
+	table = Users.query.all()
+
+	data = find_by_username(table, cookie_value)
+
+	if data:
+		response = make_response(render_template("homelogin.html", data=data))
+		# response.set_cookie("logged_username", "", 0)
+
+		return response
+
 	return render_template('index.html')
+
+@application.route('/logout')
+def logout():
+	response = make_response(redirect("/home"))
+	response.set_cookie("logged_username", "", 0)
+
+	return response
 
 
 @application.route('/login', methods=['POST', 'GET'])
@@ -49,10 +71,9 @@ def login_page():
 		inputs.append(user_login)
 		inputs.append(user_password)
 
-		if all(inputs) is False:
+		if not all(inputs):
 			alert = 'Fields cannot be empty'
 			return render_template('log-in.html', alert=alert)
-
 
 		table = Users.query.all()
 
@@ -61,12 +82,21 @@ def login_page():
 
 		for i in table:		# Conditions for login
 			if (i.user_nickname == user_login or i.user_email == user_login) and i.user_password == user_password:
-				return redirect(f'/home/{i.user_nickname}/{i.user_primary_key}={current_key}')
+
+				# Add user to cookie session
+				response = make_response(redirect("/home"))
+				response.set_cookie("logged_username", i.user_nickname, 7 * 24 * 60 * 60)
+
+				# return redirect(f'/home/{i.user_nickname}/{i.user_primary_key}={current_key}')
+				return response
 
 		alert = 'Incorrect login or password'
 		return render_template('log-in.html', alert=alert)
 
 	elif request.method == 'GET':
+		if request.cookies.get("logged_username"):
+			return redirect("/home")
+
 		return render_template('log-in.html')
 
 
@@ -209,31 +239,24 @@ def user(user, primary_key, key):
 			return render_template('homelogin.html', data=data, current_key=current_key, alert=alert)
 
 
-@application.route('/profile/<string:user>/<string:primary_key>=<string:key>')
-def profile(user, primary_key, key):
+@application.route('/profile')
+def profile():
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Search for the current user by his unique key
+	# data = found_user(table, primary_key) 	# Search for the current user by his unique key
+	cookie_value = ""
 
-	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read()	# Reading the current key
+	# Get username from cookie
+	if request.cookies.get("logged_username"):
+		cookie_value = request.cookies.get("logged_username")
 
-	string = f'{current_key} {key}'.split()
+	# Find user
+	data = find_by_username(table, cookie_value)
 
-	if data is not None and data.user_nickname == user and string[0] == string[1]:
-		if data.user_first_name == "":
-			data.user_first_name = 'No data'
-		if data.user_last_name == "":
-			data.user_last_name = 'No data'
-		if data.user_description == "":
-			data.user_description = 'No data'
-		if data.user_phone_number == "":
-			data.user_phone_number = 'No data'
+	if data:
+		return make_response(render_template("profile/profile.html", data=data))
 
-		return render_template('profile/profile.html', data=data, current_key=current_key)
-	else:
-		return '404 NOT FOUND'
-
+	return "Error"
 
 @application.route('/public-profile/<string:user>/<string:previous_primary_key>-<string:primary_key>=<string:key>', methods=['POST', 'GET'])
 def public_profile(user, previous_primary_key, primary_key, key):
@@ -296,7 +319,7 @@ def edit_profile(user, primary_key, key):
 		flag = True 
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Search for the current user by his unique key
+		current_user = found_user(table, primary_key) 	# Search for the current user by his unique key
 
 		if first_name == '':
 			first_name = current_user.user_first_name
@@ -563,7 +586,7 @@ def send_invite(user, primary_key, previous_user, previous_primary_key):
 
 	data = found_user(table, primary_key) 	# Search for the current user by his unique key
 
-	data = found_user(table, previous_primary_key) 	# Search for a previous user by their unique key
+	previous_data = found_user(table, previous_primary_key) 	# Search for a previous user by their unique key
 
 	if data.user_incoming_invitations == 'empty': 	# Record data about friend invites
 		data.user_incoming_invitations = f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}'

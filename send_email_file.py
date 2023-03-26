@@ -11,7 +11,7 @@ def send_email(message: str, recipient: str, sender='teamsitechangepassw0rd@gmai
 		return 'Email invalid'
 
 	if input_password is None:
-		with open('email-password.txt', 'r', encoding='utf-8') as file:
+		with open('keys/email-password.txt', 'r', encoding='utf-8') as file:
 			password = file.read()
 	else:
 		password = input_password

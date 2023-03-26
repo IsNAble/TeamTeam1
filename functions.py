@@ -4,8 +4,8 @@ import json
 import re
 
 
-def found_user(database, primary_key):
-	for i in database:
+def found_user(table, primary_key):
+	for i in table:
 		if i.user_primary_key == primary_key:
 			user = i
 			break
@@ -14,6 +14,12 @@ def found_user(database, primary_key):
 
 	return user
 
+def find_by_username(table, username: str):
+	for i in table:
+		if i.user_nickname == username:
+			return i
+	else:
+		return False
 
 def check_password(password: str) -> bool:
 	upper = False 		# Check uppercase
@@ -94,6 +100,8 @@ def generate_users_key(filename: str, length=8):
 	except FileNotFoundError:
 		return 'File not exists'
 
+def to_seconds(days: int) -> int:
+	return days * 24 * 60 * 60
 
 def github_api(nickname: str):
 	if nickname == 'ViLsonCake':
