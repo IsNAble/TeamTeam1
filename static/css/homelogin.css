@@ -179,7 +179,7 @@ a:hover {
 }
 
 .typing-text p span.correct{
-  color: #56964f;
+  color: #115b40;
 }
 
 .typing-text p span.incorrect{
@@ -190,7 +190,7 @@ a:hover {
 }
 
 .typing-text p span.active{
-  color: #17A2B8;
+  color: #0000005e;
 }
 
 .typing-text p span.active::before{
