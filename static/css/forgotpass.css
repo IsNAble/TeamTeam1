@@ -1,12 +1,7 @@
-@font-face {
-  font-family:"Bookerly" ;
-  src: url(../font/Bookerly.ttf) format('opentype');
-}
-
 body {
   background-color: #00110b;
   color:#000;
-  font-family: 'Bookerly';
+  font-family: 'RobotoMono';
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,7 +19,7 @@ article {
 a[class]{
 	text-decoration: none;
   color:#000;
-  font-family: 'Bookerly';
+  font-family: inherit;
 }
 
 .wrapper {

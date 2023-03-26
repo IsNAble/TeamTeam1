@@ -1,18 +1,13 @@
-@font-face {
-  font-family:"Bookerly" ;
-  src: url(../font/Bookerly.ttf) format('opentype');
-}
-
 body {
   background-color: #00110b;
   color:#fff;
-  font-family: 'Bookerly';
+  font-family: 'RobotoMono';
 }
 
 a {
 	text-decoration: none;
 	color: #fff;
-  font-family: 'Bookerly';
+  font-family: inherit;
   font-size: 18px;
 }
 

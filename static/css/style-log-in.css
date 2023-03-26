@@ -1,19 +1,14 @@
-@font-face {
-  font-family:"Bookerly" ;
-  src: url(../font/Bookerly.ttf) format('opentype');
-}
-
 body {
   background-color: #00110b;
   color:#fff;
-  font-family: 'Bookerly';
+  font-family: 'RobotoMono';
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 label {
-  font-family: "Bookerly";
+  font-family: inherit;
   color: rgb(255 216 216 / 76%);
 }
 
@@ -25,7 +20,7 @@ label {
 a[class] {
 	text-decoration: none;
   color:#000;
-  font-family: 'Bookerly';
+  font-family: inherit;
 }
 
 .wrapper {
@@ -39,8 +34,8 @@ a[class] {
   border: #fff 1px solid;
   border-radius: 30px;
   cursor: pointer;
-  width: 80px;
-  height: 40px;
+  min-width: 80px;
+  min-height: 40px;
   transition: all 0.3s ease-out!important;
 }
 
@@ -58,9 +53,9 @@ a[class] {
   display: inline-block;
   text-decoration: none;
   color: #000;
-  padding: 8px 0px;
-  width: 80px;
-  height: 40px;
+  padding: 6px 0px;
+  min-width: 80px;
+  min-height: 40px;
   border-radius: 30px;
   transition: all 0.3s ease-out!important;
 }
@@ -99,7 +94,7 @@ form input {
   border-radius: 10px;
   padding: 5px;
   text-align: center;
-  font-family: 'Bookerly';
+  font-family: inherit;
   border: none;
   transition: all 0.3s ease-out!important;
 }

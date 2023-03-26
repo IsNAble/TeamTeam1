@@ -1,12 +1,7 @@
-@font-face {
-  font-family:"Bookerly" ;
-  src: url(../../font/Bookerly.ttf) format('opentype');
-}
-
 body {
   background-color: #00110b;
   color:#fff;
-  font-family: 'Bookerly';
+  font-family: 'RobotoMono';
   font-size: 18px;
   padding-bottom: 20px;
 }
@@ -22,7 +17,7 @@ input[type='file'] {
 a {
 	text-decoration: none;
 	color: #fff;
-  font-family: 'Bookerly';
+  font-family: inherit;
   font-size: 18px;
 }
 
@@ -86,7 +81,7 @@ form input {
 }
 
 .form-group textarea {
-  width: 400px;
+  min-width: 400px;
   max-width: 100%;
   max-height: 200px;
   border-radius: 10px;
