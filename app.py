@@ -1,4 +1,5 @@
-from functions import check_password, github_api, check_extension, generate_admin_key, generate_users_key, generate_primary_key, check_key, generate_security_key, found_user, to_seconds, find_by_username, find_by_email
+from functions import check_password, github_api, check_extension, generate_primary_key, to_seconds, find_by_username, find_by_email
+from db_functions import create_typing_test_table, add_typing_test, show_all_data
 from send_email_file import send_email
 from flask import Flask, request, render_template, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
@@ -78,6 +79,19 @@ def main_page():
 		return render_template('index.html')
 
 
+@application.route('/typing-test/<string:username>/<int:wpm>', methods=['POST', 'GET'])
+def get_request_from_page(username, wpm):
+	if request.method == 'POST':
+		# Find user
+		table = Users.query.all()
+
+		data = find_by_username(table, username)
+
+		add_typing_test(data.user_id, wpm)
+
+		return redirect('/home')
+
+
 @application.route('/logout')
 def logout():
 	response = make_response(redirect("/home"))
@@ -100,9 +114,6 @@ def login_page():
 			return render_template('log-in.html', alert=alert)
 
 		table = Users.query.all()
-
-		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read()
 
 		for i in table:		# Conditions for login
 			if (i.user_nickname == user_login or i.user_email == user_login) and i.user_password == user_password:
@@ -572,6 +583,7 @@ def accept(username: str):
 		return redirect('/invite-list')
 
 	return "Error"
+
 
 @application.route('/accept-send-code')
 def accept_send_code():

@@ -3,17 +3,6 @@ import requests
 import json
 import re
 
-
-def found_user(table, primary_key):
-	for i in table:
-		if i.user_primary_key == primary_key:
-			user = i
-			break
-	else:
-		return 'User not found'
-
-	return user
-
 def find_by_username(table, username: str):
 	for i in table:
 		if i.user_nickname == username:
@@ -52,15 +41,6 @@ def check_extension(filename: str) -> bool: 	# Function to check valid file exte
 		return False
 
 
-def check_key(key: str, filename='users-key.txt') -> bool:
-	with open('keys/' + filename, 'r', encoding='utf-8') as file:
-		current_key = file.read()
-
-	string = f'{key} {current_key}'.split()
-
-	return string[0] == string[1], current_key
-
-
 def generate_primary_key():
 	return str(randrange(1000, 10000))		# Four-digit key generation 
 
@@ -68,44 +48,6 @@ def generate_primary_key():
 def generate_security_key():
 	return str(randrange(100000, 1000000)) 	# Six-digit key generation
 
-
-def generate_admin_key(filename: str, length=6) -> None:
-	try:
-		with open(filename, 'r', encoding='utf-8') as file:
-			output = file.readlines()
-			current_key = output[0]
-			count = int(output[-1].split()[-1])
-
-		if count % 10 == 0:
-			count += 1
-			lower_case = "qwertyuiopasdfghjklzzxcvbnm"
-			upper_case = "QWERTYUIOPASDFGHJKLZXCVBNM"
-			numbers = "0123456789"
-			string = lower_case + upper_case + numbers
-			current_key = ''.join(sample(string, length)) 	# Generating a new key every 10 server starts
-		else:
-			count += 1
-
-		with open(filename, 'w', encoding='utf-8') as file:
-			file.write(f'{current_key}\ncount: {count}') 	# Writing a new key
-
-	except FileNotFoundError:
-		return 'File not exists'
-
-
-def generate_users_key(filename: str, length=8):
-	try:
-		lower_case = "qwertyuiopasdfghjklzzxcvbnm"
-		upper_case = "QWERTYUIOPASDFGHJKLZXCVBNM"
-		numbers = "0123456789"
-		string = lower_case + upper_case + numbers
-		current_key = ''.join(sample(string, length))
-
-		with open(filename, 'w', encoding='utf-8') as file:
-			file.write(current_key)
-
-	except FileNotFoundError:
-		return 'File not exists'
 
 def to_seconds(days: int) -> int:
 	return days * 24 * 60 * 60

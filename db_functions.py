@@ -112,3 +112,41 @@ def update_values_in_db(element, value, primary_key) -> int:
         cursor.execute(f"UPDATE users SET {element} = ? WHERE user_primary_key = ?", values_tuple)
 
         return 1
+
+
+def create_typing_test_table():
+	with sqlite3.connect('database.db') as connect:
+		cursor = connect.cursor()
+
+		cursor.execute("""CREATE TABLE IF NOT EXISTS typing_test (
+							test_id INTEGER PRIMARY KEY,
+							user_id INTEGER,
+							wpm INTEGER DEFAULT 0
+						)""")
+
+		print("Success")
+
+
+def add_typing_test(user_id, wpm):
+	with sqlite3.connect('database.db') as connect:
+		cursor = connect.cursor()
+
+		cursor.execute("INSERT INTO typing_test (user_id, wpm) VALUES (?, ?)", (user_id, wpm))
+
+
+def show_all_data():
+	with sqlite3.connect('database.db') as connect:
+		cursor = connect.cursor()
+
+		EXECUTE_STRING = "SELECT * FROM users JOIN typing_test ON typing_test.user_id = users.user_id"
+
+		cursor.execute(EXECUTE_STRING)
+
+		for row in cursor.fetchall():
+			print(row)
+
+
+if __name__ == '__main__':
+	create_typing_test_table()
+	# add_typing_test(2, 57)
+	show_all_data()
