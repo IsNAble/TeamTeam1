@@ -134,6 +134,33 @@ def add_typing_test(user_id, wpm):
 		cursor.execute("INSERT INTO typing_test (user_id, wpm) VALUES (?, ?)", (user_id, wpm))
 
 
+def get_average_wpm_value(user_id: int):
+	with sqlite3.connect('database.db') as connect:
+		cursor = connect.cursor()
+
+		cursor.execute("SELECT AVG(wpm) FROM typing_test WHERE user_id=?", (str(user_id)))
+
+		return round(cursor.fetchone()[0], 1)
+
+
+def get_max_wpm_value(user_id: int):
+	with sqlite3.connect('database.db') as connect:
+		cursor = connect.cursor()
+
+		cursor.execute("SELECT MAX(wpm) FROM typing_test WHERE user_id=?", (str(user_id)))
+
+		return cursor.fetchone()[0]
+
+
+def get_count_wpm(user_id: int):
+	with sqlite3.connect('database.db') as connect:
+		cursor = connect.cursor()
+
+		cursor.execute("SELECT COUNT(wpm) FROM typing_test WHERE user_id=?", (str(user_id)))
+
+		return cursor.fetchone()[0]
+
+
 def show_all_data():
 	with sqlite3.connect('database.db') as connect:
 		cursor = connect.cursor()
@@ -148,5 +175,3 @@ def show_all_data():
 
 if __name__ == '__main__':
 	create_typing_test_table()
-	# add_typing_test(2, 57)
-	show_all_data()
