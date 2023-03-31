@@ -129,3 +129,16 @@ header {
   padding-right: 13px;
   padding-top: 5px;
 }
+
+.statistics {
+  min-width: calc(100vw - 811px);
+  display: flex;
+  justify-content: center;
+  font-size: 38px;
+}
+
+.statistic-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
