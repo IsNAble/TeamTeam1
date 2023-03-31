@@ -19,14 +19,14 @@
           <form method="post">
             <input type="password" name="old-password" id="pass" placeholder="Enter old password">
             <div class="forgotpass-link">
-              <a href="/forgot-password/{{ user }}/{{ primary_key }}={{ key }}&c" class="item__link">Forgot password?</a>
+              <a href="/forgot-password/c" class="item__link">Forgot password?</a>
             </div>
             <label>{{ alert_up }}</label>
             <input type="password" name="password" id="pass" placeholder="Enter new password">
             <label>{{ alert_down }}</label>
             <input type="password" name="repeatpassword" id="pass" placeholder="Repeat password">
             <div class="button">
-            <a href="/edit-profile/{{ user }}/{{ primary_key }}={{ key }}">Back</a>
+            <a href="/edit-profile">Back</a>
             <button class="success" type="submit">Change</button>
             </div>
           </form>

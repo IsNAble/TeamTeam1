@@ -8,9 +8,22 @@ cpmTag = document.querySelector(".cpm span");
 
 let timer,
 maxTime = 60,
-countOfWords = 30,
+countOfWords = 10,
 timeLeft = maxTime,
 charIndex = mistakes = isTyping = 0;
+
+document.onload = function() {
+    document.querySelector(".wrapper .input-field").focus();
+}
+
+function sendPostRequest(url) {
+    return fetch(url, {
+        method: 'POST',
+        mode: 'no-cors'
+    }).then(response => {
+        return response
+    })
+}
 
 function loadParagraph() {
 
@@ -32,7 +45,7 @@ function loadParagraph() {
     });
 
     typingText.querySelectorAll("span")[0].classList.add("active");
-    document.addEventListener("keydown", () => inpField.focus());
+    // document.addEventListener("keydown", () => inpField.focus());
     typingText.addEventListener("click", () => inpField.focus());
 }
 
@@ -72,6 +85,16 @@ function initTyping() {
         cpmTag.innerText = charIndex - mistakes;
     } else {
         clearInterval(timer);
+
+        let username = document.getElementById('username').innerText
+
+        if (username !== '') {
+            let url = "http://localhost:5000/typing-test/" + 
+            username + '/' + wpmTag.innerText
+
+            sendPostRequest(url)
+        }
+
         inpField.value = "";
     }   
 }
@@ -88,7 +111,11 @@ function sample(wordsListJson, countOfWord) {
     let sampleList = []
 
     for (let i = 0; i < countOfWord; i++) {
-        sampleList.push(getRandomWord(wordsListJson))
+        let randomWord = getRandomWord(wordsListJson);
+        while (randomWord.includes("'"))
+            randomWord = getRandomWord(wordsListJson);
+
+        sampleList.push(randomWord)
     }
 
     return sampleList;
@@ -108,6 +135,7 @@ function initTimer() {
 function resetGame() {
     loadParagraph();
     clearInterval(timer);
+
     timeLeft = maxTime;
     charIndex = mistakes = isTyping = 0;
     inpField.value = "";
@@ -115,6 +143,9 @@ function resetGame() {
     wpmTag.innerText = 0;
     mistakeTag.innerText = 0;
     cpmTag.innerText = 0;
+
+    document.querySelector(".wrapper .input-field").focus();
+
 }
 
 loadParagraph();
