@@ -4,3 +4,4 @@
 /.idea
 database.db
 telegram_user.db
+static/img

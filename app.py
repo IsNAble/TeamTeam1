@@ -34,24 +34,49 @@ class Users(db.Model):
 		return '<Users %r>' % self.id
 
 
-@application.route('/')
-@application.route('/home')
+@application.route('/', methods=['POST', 'GET'])
+@application.route('/home', methods=['POST', 'GET'])
 def main_page():
-	cookie_value = ""
+	if request.method == 'POST':
+		user_input = request.form['search-bar']
 
-	if (request.cookies.get("logged_username")):
-		cookie_value = request.cookies.get("logged_username")
+		if '#' not in user_input:
+			return redirect('/home')
 
-	table = Users.query.all()
+		username, primary_key = user_input.split('#')
 
-	data = find_by_username(table, cookie_value)
+		table = Users.query.all()
 
-	if data:
-		response = make_response(render_template("homelogin.html", data=data))
+		data = find_by_username(table, username)
+
+		# Make response
+		response = make_response(render_template("profile/public-profile.html", data=data))
+		response.set_cookie("viewed_profile", data.user_nickname)
 
 		return response
 
-	return render_template('index.html')
+	elif request.method == 'GET':
+
+		if (request.cookies.get("logged_username")):
+			cookie_value = request.cookies.get("logged_username")
+
+			table = Users.query.all()
+
+			data = find_by_username(table, cookie_value)
+
+			# Find invites
+			if data.user_incoming_invitations.split() and '#' in data.user_incoming_invitations.split()[0]:
+				notifications = '!'
+			else:
+				notifications = ""
+
+			if data:
+				response = make_response(render_template("homelogin.html", data=data, notifications=notifications))
+
+				return response
+
+		return render_template('index.html')
+
 
 @application.route('/logout')
 def logout():
@@ -92,9 +117,6 @@ def login_page():
 		return render_template('log-in.html', alert=alert)
 
 	elif request.method == 'GET':
-		# if request.cookies.get("logged_username"):
-		# 	return redirect("/home")
-
 		return render_template('log-in.html')
 
 
@@ -200,53 +222,6 @@ def profile():
 
 	return "Error"
 
-@application.route('/public-profile/<string:user>/<string:previous_primary_key>-<string:primary_key>=<string:key>', methods=['POST', 'GET'])
-def public_profile(user, previous_primary_key, primary_key, key):
-	if request.method == 'GET':
-		table = Users.query.all()
-
-		data = found_user(table, primary_key) 	# Search for the current user by his unique key
-
-		for i in table:
-			if i.user_primary_key == previous_primary_key:
-				previous_user = i.user_nickname
-				break
-		else:
-			return 'User not found'
-
-		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	
-
-		string = f'{current_key} {key}'.split()
-
-		if data is not None and data.user_nickname == user and string[0] == string[1]:
-			if data.user_first_name == "":
-				data.user_first_name = 'No data'
-			if data.user_last_name == "":
-				data.user_last_name = 'No data'
-			if data.user_description == "":
-				data.user_description = 'No data'
-			if data.user_phone_number == "":
-				data.user_phone_number = 'No data'
-
-			return render_template('profile/public-profile.html', data=data, current_key=current_key, previous_user=previous_user, previous_primary_key=previous_primary_key)
-		else:
-			return '404 NOT FOUND'
-	elif request.method == 'POST':
-		table = Users.query.all()
-
-		data = found_user(table, primary_key) 	# Search for the current user by his unique key
-
-		data.user_incoming_invitations = f'{user}#{previous_primary_key}'
-
-		try:
-			db.session.commit()
-		except:
-			return 'error'
-
-		return redirect(f'public-profile/{user}/{previous_primary_key}-{primary_key}={key}')
-
-
 @application.route('/edit-profile/', methods=['POST', 'GET'])
 def edit_profile():
 	if request.method == 'POST':
@@ -272,8 +247,6 @@ def edit_profile():
 
 		if not current_user:
 			return "Error"
-
-		# response =  make_response(render_template("profile/profile.html", data=data))
 
 		if first_name == '':
 			first_name = current_user.user_first_name
@@ -348,47 +321,49 @@ def edit_profile():
 
 		return "Error"
 
-@application.route('/change-password/<string:user>/<string:primary_key>=<string:key>', methods=['POST', 'GET'])
-def change_password(user, primary_key, key):
+@application.route('/change-password', methods=['POST', 'GET'])
+def change_password():
 	if request.method == 'POST':
 		table = Users.query.all()
 
-		data = found_user(table, primary_key) 	# Search for the current user by his unique key
+		if request.cookies.get:
+			username = request.cookies.get("logged_username")
 
-		old_password = request.form['old-password']
-		password = request.form['password']
-		repeatpassword = request.form['repeatpassword']
+			data = find_by_username(table, username)
 
-		if old_password == "" or password == "" or repeatpassword == "":
-			alert_up = 'The field cannot be empty'
-			return render_template('changepass.html', alert_up=alert_up, user=user, primary_key=primary_key, key=key)
+			old_password = request.form['old-password']
+			password = request.form['password']
+			repeatpassword = request.form['repeatpassword']
 
-		if old_password.strip() != data.user_password:
-			alert_up = 'You entered the wrong password'
-			return render_template('changepass-page.html', alert_up=alert_up, user=user, primary_key=primary_key, key=key)
+			if old_password == "" or password == "" or repeatpassword == "":
+				alert_up = 'The field cannot be empty'
+				return render_template('changepass.html', alert_up=alert_up, user=user, primary_key=primary_key, key=key)
 
-		if password.strip() != repeatpassword.strip():
-			alert_down = "Passwords don't equals"
-			return render_template('changepass-page.html', alert_down=alert_down, user=user, primary_key=primary_key, key=key)
+			if old_password.strip() != data.user_password:
+				alert_up = 'You entered the wrong password'
+				return render_template('changepass-page.html', alert_up=alert_up, user=user, primary_key=primary_key, key=key)
 
-		if password.strip() == data.user_password:
-			alert_down = 'The new password must not be the same as the old one'
-			return render_template('changepass-page.html', alert_down=alert_down, user=user, primary_key=primary_key, key=key)
+			if password.strip() != repeatpassword.strip():
+				alert_down = "Passwords don't equals"
+				return render_template('changepass-page.html', alert_down=alert_down, user=user, primary_key=primary_key, key=key)
 
-		data.user_password = password
-		data.user_repeat_password = password
+			if password.strip() == data.user_password:
+				alert_down = 'The new password must not be the same as the old one'
+				return render_template('changepass-page.html', alert_down=alert_down, user=user, primary_key=primary_key, key=key)
 
-		try:
-			db.session.commit()
-		except Exception as _ex:
-			return _ex
+			data.user_password = password
+			data.user_repeat_password = password
 
-		with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-			current_key = file.read() 	# Reading the current key
+			try:
+				db.session.commit()
+			except Exception as _ex:
+				return _ex
 
-		return redirect(f'/edit-profile/{data.user_nickname}/{data.user_primary_key}={current_key}')
+			return redirect('/edit-profile')
+
+		return "Error"
 	elif request.method == 'GET':
-		return render_template('changepass-page.html', user=user, primary_key=primary_key, key=key)
+		return render_template('changepass-page.html')
 
 
 @application.route('/new-password', methods=['POST', 'GET'])
@@ -399,7 +374,6 @@ def new_password():
 	elif request.method == 'POST':
 		table = Users.query.all()
 
-		# data = found_user(table, primary_key) 	# Search for the current user by his unique key
 		cookie_value = ""
 
 		if request.cookies.get("verify_email"):
@@ -435,31 +409,23 @@ def new_password():
 
 @application.route('/forgot-password/<string:page>')
 def forgot_password(page):
-	# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-	# 	current_key = file.read() 	# Reading the current key
-	#
-	# string = f'{current_key} {key}'.split()
-	#
-	# if string[0] != string[1]:
-	# 	return '404 NOT FOUND'
-	#
-	# table = Users.query.all()
-	#
-	# data = found_user(table, primary_key) 	# Search for the current user by his unique key
 	table = Users.query.all()
+	username = ""
 
 	# Get username from cookie
-	if request.cookies.get("verify_email"):
-		email_from_cookie = request.cookies.get("verify_email")
+	if not request.cookies.get("verify_email"):
+		username = request.cookies.get("logged_username")
 
-		if page == 'l': 	# Mode when the user enters from the login page
-			link_back = '/login'
-		elif page == 'c': 	# Mode when the user enters from the password change page
-			link_back = '/change-password'
+		email = find_by_username(table, username).user_email
+	else:
+		email = request.cookies.get("verify_email")
 
-		return render_template('forgotpass.html', email=email_from_cookie, link_back=link_back)
+	if page == 'l': 	# Mode when the user enters from the login page
+		link_back = '/login'
+	elif page == 'c': 	# Mode when the user enters from the password change page
+		link_back = '/change-password'
 
-	return "Error"
+	return render_template('forgotpass.html', email=email, link_back=link_back)
 
 
 @application.route('/enter-login', methods=['POST', 'GET'])
@@ -483,8 +449,6 @@ def enter_login():
 			alert = 'this email is not registered'
 			return render_template('enterlogin.html', alert=alert)
 
-		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		# 	current_key = file.read() 	# Reading the current key
 		response = make_response(redirect('/forgot-password/l'))
 		response.set_cookie("verify_email", email)
 
@@ -494,25 +458,13 @@ def enter_login():
 @application.route('/enter-code', methods=['POST', 'GET'])
 def enter_code():
 	if request.method == 'GET':
-		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		# 	current_key = file.read() 	# Reading the current key
-		#
-		# string = f'{current_key} {key}'.split()
-		#
-		# table = Users.query.all()
-		# data = found_user(table, primary_key) 	# Search for the current user by his unique key
-		#
-		# if string[0] != string[1]:
-		# 	return '404 NOT FOUND'
 		return render_template('entercode.html')
 	elif request.method == 'POST':
 		user_code = request.form['security-code']
-		# code_from_url = str(int(code[::-1], 2))
 
 		if request.cookies.get("verify_code"):
 			code_from_cookie = request.cookies.get("verify_code")
 
-			# data = found_user(table, primary_key) 	# Search for the current user by his unique key
 			table = Users.query.all()
 
 			if user_code.strip() != code_from_cookie:
@@ -547,90 +499,84 @@ def friend_list():
 	return render_template('friends-page.html', data=data, friends_list=friends_list)
 
 
-@application.route('/send-invite&<string:user>-<string:primary_key>&<string:previous_user>-<string:previous_primary_key>')
-def send_invite(user, primary_key, previous_user, previous_primary_key):
-	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read()
-
-	if primary_key == previous_primary_key: 	# Conditions under which the user sends a request to himself
-		return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
-
+@application.route('/send-invite')
+def send_invite():
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Search for the current user by his unique key
+	if request.cookies.get("logged_username") and request.cookies.get("viewed_profile"):
+		data = find_by_username(table, request.cookies.get("viewed_profile")) 	# Search for the current user by his unique key
 
-	previous_data = found_user(table, previous_primary_key) 	# Search for a previous user by their unique key
+		previous_data = find_by_username(table, request.cookies.get("logged_username")) 	# Search for a previous user by their unique key
 
-	if data.user_incoming_invitations == 'empty': 	# Record data about friend invites
-		data.user_incoming_invitations = f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
-	elif f'{previous_data.user_avatar}#{previous_user}#{previous_primary_key}' not in data.user_incoming_invitations:
-		data.user_incoming_invitations += f' {previous_data.user_avatar}#{previous_user}#{previous_primary_key}'
+		if data.user_incoming_invitations == 'empty': 	# Record data about friend invites
+			data.user_incoming_invitations = f'{previous_data.user_avatar}#{previous_data.user_nickname}#{previous_data.user_primary_key}'
+		elif f'{previous_data.user_avatar}#{previous_data.user_nickname}#{previous_data.user_primary_key}' not in data.user_incoming_invitations:
+			data.user_incoming_invitations += f' {previous_data.user_avatar}#{previous_data.user_nickname}#{previous_data.user_primary_key}'
 
-	try:
-		db.session.commit()
-	except Exception as _ex:
-		return _ex
-
-	return redirect(f'/public-profile/{user}/{previous_primary_key}-{primary_key}={current_key}')
-
-
-@application.route('/invite-list/<string:user>-<string:primary_key>=<string:key>')
-def invite_list(user, primary_key, key):
-	current_key = check_key(key)
-	if current_key[0] is not True:
-		return '404 NOT FOUND'
-
-	table = Users.query.all()
-
-	data = found_user(table, primary_key) 	# Search for the current user by his unique key
-
-	invites_list = data.user_incoming_invitations.split() 	# split all invitations
-
-	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
-
-	return render_template('invite-list.html', data=data, invites_list=invites_list, primary_key=primary_key, current_key=current_key[1])
-
-
-@application.route('/accept/<string:avatar>&<string:user>&<string:key>=<string:primary_key>')
-def accept(avatar, user, key, primary_key):
-	table = Users.query.all()
-
-	data = found_user(table, primary_key) 	# Search for the current user by his unique key
-
-	invites_list = data.user_incoming_invitations.split() 	# Split per invite
-
-	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
-		if invites_list[i][-1] == key:		# If this is the user we are accepting invite, remove him
-			invites_list[i] = ''
-		invites_list[i] = '#'.join(invites_list[i]) 	# Join element back by type avatar#nickname#key
-
-	invites_list = " ".join(invites_list) 	 # Join all invites
-
-	if data.user_friends_list == 'empty': 	# default value
-		data.user_friends_list = f'{avatar}#{user}#{key}' 	# Adding as a friend and deleting an invite after that
-		data.user_incoming_invitations = invites_list
-	elif f'{avatar}#{user}#{key}' not in data.user_friends_list:
-		data.user_friends_list += f' {avatar}#{user}#{key}'
-		data.user_incoming_invitations = invites_list
-
-	try:
-		db.session.commit()
-	except Exception as _ex:
+		try:
+			db.session.commit()
+		except Exception as _ex:
 			return _ex
 
-	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Reading the current key
+		return render_template("profile/public-profile.html", data=data)
 
-	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
+	return "Error"
 
+@application.route('/invite-list')
+def invite_list():
+	table = Users.query.all()
+
+	if request.cookies.get("logged_username"):
+		data = find_by_username(table, request.cookies.get("logged_username")) 	# Search for the current user by his unique key
+
+		invites_list = data.user_incoming_invitations.split() 	# split all invitations
+
+		for i in range(len(invites_list)):
+			invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
+
+		return render_template('invite-list.html', data=data, invites_list=invites_list)
+
+	return "Error"
+
+@application.route('/accept/<string:username>')
+def accept(username: str):
+	table = Users.query.all()
+
+	if request.cookies.get("logged_username"):
+		data = find_by_username(table, request.cookies.get("logged_username"))
+
+		user_from_invite = find_by_username(table, username)
+
+		invites_list = data.user_incoming_invitations.split() 	# Split per invite
+
+		for i in range(len(invites_list)):
+			invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
+			if invites_list[i][1] == username:		# If this is the user we are accepting invite, remove him
+				invites_list[i] = ''
+			invites_list[i] = '#'.join(invites_list[i]) 	# Join element back by type avatar#nickname#key
+
+		invites_list = " ".join(invites_list) 	 # Join all invites
+
+		if data.user_friends_list == 'empty': 	# default value
+			data.user_friends_list = f'{user_from_invite.user_avatar}#{user_from_invite.user_nickname}#{user_from_invite.user_primary_key}' 	# Adding as a friend and deleting an invitation after that
+			data.user_incoming_invitations = invites_list
+		elif f'{user_from_invite.user_avatar}#{user_from_invite.user_nickname}#{user_from_invite.user_primary_key}' not in data.user_friends_list:
+			data.user_friends_list += f' {user_from_invite.user_avatar}#{user_from_invite.user_nickname}#{user_from_invite.user_primary_key}'
+			data.user_incoming_invitations = invites_list
+
+		try:
+			db.session.commit()
+		except Exception as _ex:
+				return _ex
+
+		return redirect('/invite-list')
+
+	return "Error"
 
 @application.route('/accept-send-code')
 def accept_send_code():
 	table = Users.query.all()
 
-	# data = found_user(table, primary_key) 	# Search for the current user by his unique key
 	cookie_value = ""
 
 	# Get username from cookie
@@ -644,12 +590,6 @@ def accept_send_code():
 		message = f'Your verify code is:\n{verify_code}'
 		recipient = data.user_email
 
-		# encode = bin(int(code))[2:]
-		# encode = encode[::-1]
-
-		# with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		# 	current_key = file.read() 	# Reading the current key
-
 		output = send_email(message, recipient)
 
 		if output == 'Success':
@@ -657,7 +597,6 @@ def accept_send_code():
 			response.set_cookie("verify_code")
 
 			return response
-			# return redirect(f'/enter-code/{data.user_nickname}/{data.user_primary_key}={current_key}&{encode}')
 		elif output == 'Email invalid':
 			alert = 'Email invalid'
 			return render_template('forgotpass.html', alert=alert)
@@ -665,35 +604,33 @@ def accept_send_code():
 	return "Error"
 
 
-@application.route('/decline/<string:avatar>&<string:user>&<string:key>=<string:primary_key>')
-def decline(avatar, user, key, primary_key):
+@application.route('/decline/<string:username>')
+def decline(username: str):
 	table = Users.query.all()
 
-	data = found_user(table, primary_key) 	# Search for the current user by his unique key
+	if request.cookies.get("logged_username"):
+		data = find_by_username(table, request.cookies.get("logged_username"))
 
-	invites_list = data.user_incoming_invitations.split() 	# Split per invite
+		invites_list = data.user_incoming_invitations.split() 	# Split per invite
 
-	for i in range(len(invites_list)):
-		invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
-		if invites_list[i][-1] == key: 		# If this is the user we are accepting invite, remove him
-			invites_list[i] = ''
-		invites_list[i] = '#'.join(invites_list[i]) 	# Join element back by type avatar#nickname#key
+		for i in range(len(invites_list)):
+			invites_list[i] = invites_list[i].split('#') 	# Splitting elements into a tuple (avatar, nickname, key)
+			if invites_list[i][1] == username: 		# If this is the user we are declining invite, remove him
+				invites_list[i] = ''
+			invites_list[i] = '#'.join(invites_list[i]) 	# Join element back by type avatar#nickname#key
 
-	invites_list = " ".join(invites_list) 	 # Join all invites
+		invites_list = " ".join(invites_list) 	 # Join all invites
 
-	data.user_incoming_invitations = invites_list 		# Rewriting the invite list
+		data.user_incoming_invitations = invites_list 		# Rewriting the invite list
 
-	try:
-		db.session.commit()
-	except Exception as _ex:
-		return _ex
+		try:
+			db.session.commit()
+		except Exception as _ex:
+			return _ex
 
-	with open('keys/users-key.txt', 'r', encoding='utf-8') as file:
-		current_key = file.read() 	# Reading the current key
+		return redirect('/invite-list')
 
-	return redirect(f'/invite-list/{data.user_nickname}-{data.user_primary_key}={current_key}')
-
-
+	return "Error"
 
 
 if __name__ == '__main__':
