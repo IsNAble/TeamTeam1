@@ -1,5 +1,5 @@
 from functions import check_password, github_api, check_extension, generate_primary_key, to_seconds, find_by_username, find_by_email
-from db_functions import create_typing_test_table, add_typing_test, show_all_data
+from db_functions import create_typing_test_table, add_typing_test, show_all_data, get_average_wpm_value, get_max_wpm_value, get_count_wpm
 from send_email_file import send_email
 from flask import Flask, request, render_template, redirect, url_for, make_response
 from flask_sqlalchemy import SQLAlchemy
@@ -50,8 +50,10 @@ def main_page():
 
 		data = find_by_username(table, username)
 
+		best, average, count = get_max_wpm_value(data.user_id), get_average_wpm_value(data.user_id), get_count_wpm(data.user_id)
+
 		# Make response
-		response = make_response(render_template("profile/public-profile.html", data=data))
+		response = make_response(render_template("profile/public-profile.html", data=data, best=best, average=average, count=count))
 		response.set_cookie("viewed_profile", data.user_nickname)
 
 		return response
@@ -228,8 +230,10 @@ def profile():
 	# Find user
 	data = find_by_username(table, cookie_value)
 
+	best, average, count = get_max_wpm_value(data.user_id), get_average_wpm_value(data.user_id), get_count_wpm(data.user_id)
+
 	if data:
-		return make_response(render_template("profile/profile.html", data=data))
+		return make_response(render_template("profile/profile.html", data=data, best=best, average=average, count=count))
 
 	return "Error"
 
