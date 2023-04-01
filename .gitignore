@@ -1,3 +1,6 @@
 /venv
 /.idea
+/__pycache__
 telegram_user.db
+database.db
+/static/img
